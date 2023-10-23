@@ -8,5 +8,8 @@
   },
   "keywords": [],
   "author": "Nils Haberkamp",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.2.2"
+  }
 }
