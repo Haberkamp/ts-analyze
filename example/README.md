@@ -1,0 +1,8 @@
+# Example projects
+
+This directory contains example projects that simulates different kinds real-world projects.
+
+Use these projects to help you develop the application. These are the types of
+simulated projects:
+
+* only-js: Contains only Javascript files
