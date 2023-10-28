@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { cruise, type IModule, type IReporterOutput } from 'dependency-cruiser';
 import { program } from 'commander';
 import extractWebpackResolveConfig from "dependency-cruiser/config-utl/extract-webpack-resolve-config";
