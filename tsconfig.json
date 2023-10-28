@@ -24,6 +24,6 @@
     /* If you're building for a library: */
     "declaration": true,
   },
-  "include": ["**/src/**/*.ts"],
+  "include": ["./src/**/*.ts"],
   "exclude": ["node_modules"]
 }
