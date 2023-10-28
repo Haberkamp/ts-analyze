@@ -1,8 +1,22 @@
 import { cruise, type IModule, type IReporterOutput } from 'dependency-cruiser';
+import { program } from 'commander';
+import extractWebpackResolveConfig from "dependency-cruiser/config-utl/extract-webpack-resolve-config";
 
-const cruiseResult: IReporterOutput = await cruise(['src'], {
-  includeOnly: '^src/'
-});
+// create cli argument for webpack path
+program.option('--webpack-config', '--webpack-config <path>', undefined);
+program.parse();
+
+const [webpackConfigPath] = program.args;
+
+// TODO: handle error
+// @ts-ignore
+const webpackConfig = !!webpackConfigPath ? await extractWebpackResolveConfig(webpackConfigPath) : undefined
+
+const cruiseResult: IReporterOutput = await cruise(
+  ['src'],
+  { includeOnly: '^src/' },
+  webpackConfig
+);
 
 if (typeof cruiseResult.output === 'string') throw new Error('lul');
 
