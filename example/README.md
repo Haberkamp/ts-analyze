@@ -7,3 +7,4 @@ simulated projects:
 
 * only-js: Contains only Javascript files
 * webpack-config: Javascript project with webpack config
+* migration-completed: Javascript project completely migrated
