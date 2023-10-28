@@ -6,3 +6,4 @@ Use these projects to help you develop the application. These are the types of
 simulated projects:
 
 * only-js: Contains only Javascript files
+* webpack-config: Javascript project with webpack config
