@@ -22,6 +22,12 @@ const cruiseResult: IReporterOutput = await cruise(
 
 if (typeof cruiseResult.output === 'string') throw new Error('lul');
 
+const migrationCompleted = cruiseResult.output.modules.every(module => module.source.includes('.ts'));
+if (migrationCompleted) {
+  console.log('Migration completed!')
+  process.exit(0);
+}
+
 type FileResult = {
   // path to the file
   source: string;
