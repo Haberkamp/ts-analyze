@@ -8,6 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc"
   },
+  "bin": "./dist/index.js",
   "keywords": [],
   "author": "Nils Haberkamp",
   "license": "MIT",
