@@ -13,7 +13,10 @@
     // Configure properties specific to VS Code.
     "vscode": {
       "settings": {},
-      "extensions": ["streetsidesoftware.code-spell-checker"]
+      "extensions": [
+		    "streetsidesoftware.code-spell-checker",
+		    "esbenp.prettier-vscode"
+	    ]
     }
   },
 
