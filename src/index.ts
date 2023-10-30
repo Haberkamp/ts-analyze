@@ -6,13 +6,13 @@ import extractWebpackResolveConfig from "dependency-cruiser/config-utl/extract-w
 
 // create cli argument for webpack path
 program.option('--webpack-config <path>', undefined);
-program.parse();
+program.parse(process.argv);
 
-const [webpackConfigPath] = program.args;
+const options = program.opts();
 
 // TODO: handle error
 // @ts-ignore
-const webpackConfig = !!webpackConfigPath ? await extractWebpackResolveConfig(webpackConfigPath) : undefined
+const webpackConfig = !!options.webpackConfig ? await extractWebpackResolveConfig(options.webpackConfig) : undefined
 
 const cruiseResult: IReporterOutput = await cruise(
   ['src'],
