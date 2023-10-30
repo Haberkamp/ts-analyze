@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "allowJs": true
+  },
+  "include": ["./src/**/*.ts", "./src/**/*.js"],
+  "exclude": [
+    "node_modules"
+  ]
+}
