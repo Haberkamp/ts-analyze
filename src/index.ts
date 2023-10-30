@@ -5,7 +5,7 @@ import { program } from 'commander';
 import extractWebpackResolveConfig from "dependency-cruiser/config-utl/extract-webpack-resolve-config";
 
 // create cli argument for webpack path
-program.option('--webpack-config', '--webpack-config <path>', undefined);
+program.option('--webpack-config <path>', undefined);
 program.parse();
 
 const [webpackConfigPath] = program.args;
