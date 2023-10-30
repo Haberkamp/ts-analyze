@@ -1,4 +1,4 @@
-import { get } from "./core/httpClient";
+import { get } from './core/httpClient';
 import UserRepository from './core/UserRepository';
 
 new UserRepository();

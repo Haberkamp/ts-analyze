@@ -1,3 +1,3 @@
-import { get } from "./core/httpClient.ts";
+import { get } from './core/httpClient.ts';
 
 get('/api/foo');

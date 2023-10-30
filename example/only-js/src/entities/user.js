@@ -1,19 +1,19 @@
 export default class User {
-    #user;
+	#user;
 
-    constructor(user) {
-        this.#user = user;
-    }
+	constructor(user) {
+		this.#user = user;
+	}
 
-    getId() {
-        return this.getId;
-    }
+	getId() {
+		return this.getId;
+	}
 
-    getFirstName() {
-        return this.#user.firstName;
-    }
+	getFirstName() {
+		return this.#user.firstName;
+	}
 
-    getLastName() {
-        return this.#user.lastName;
-    }
+	getLastName() {
+		return this.#user.lastName;
+	}
 }
