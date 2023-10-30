@@ -85,6 +85,9 @@ function countDependents(module: IModule): string[] {
 }
 
 const result = cruiseResult.output.modules.reduce<Array<FileResult>>((accumulator, moduleReport) => {
+  const isTypeScriptFile = moduleReport.source.endsWith('.ts');
+  if (isTypeScriptFile) return accumulator;
+
   const deps = countDependencies(moduleReport);
   const dependents = countDependents(moduleReport);
 
