@@ -1,23 +1,26 @@
 {
-  "name": "ts-analyze",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "type": "module",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc"
-  },
-  "bin": "./dist/index.js",
-  "keywords": [],
-  "author": "Nils Haberkamp",
-  "license": "MIT",
-  "devDependencies": {
-    "@types/node": "^20.8.7",
-    "typescript": "^5.2.2"
-  },
-  "dependencies": {
-    "commander": "^11.1.0",
-    "dependency-cruiser": "^15.0.0"
-  }
+	"name": "ts-analyze",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"type": "module",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"build": "tsc",
+		"format": "prettier . --write --cache",
+		"format:check": "prettier . --check --cache"
+	},
+	"bin": "./dist/index.js",
+	"keywords": [],
+	"author": "Nils Haberkamp",
+	"license": "MIT",
+	"devDependencies": {
+		"@types/node": "^20.8.7",
+		"prettier": "^3.0.3",
+		"typescript": "^5.2.2"
+	},
+	"dependencies": {
+		"commander": "^11.1.0",
+		"dependency-cruiser": "^15.0.0"
+	}
 }

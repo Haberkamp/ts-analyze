@@ -1,13 +1,13 @@
 {
-  "name": "ts-config",
-  "version": "0.0.0",
-  "private": true,
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "Nils Haberkamp",
-  "license": "MIT"
+	"name": "ts-config",
+	"version": "0.0.0",
+	"private": true,
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"keywords": [],
+	"author": "Nils Haberkamp",
+	"license": "MIT"
 }

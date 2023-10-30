@@ -1,3 +1,3 @@
-import {get} from "@core/httpClient.js";
+import { get } from '@core/httpClient.js';
 
-get("https://jsonplaceholder.typicode.com/todos/1")
+get('https://jsonplaceholder.typicode.com/todos/1');
