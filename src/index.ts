@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 
 import { cruise, type IModule, type IReporterOutput } from 'dependency-cruiser';
-import { program } from 'commander';
+import { Command } from '@commander-js/extra-typings';
 import extractWebpackResolveConfig from 'dependency-cruiser/config-utl/extract-webpack-resolve-config';
 import extractTSConfig from 'dependency-cruiser/config-utl/extract-ts-config';
 
-// create cli argument for webpack path
-program.option('--webpack-config <path>', undefined);
-program.option('--ts-config <path>', undefined);
+const program = new Command()
+	.option('--webpack-config <path>', undefined)
+	.option('--ts-config <path>', undefined);
 
 program.parse(process.argv);
 
