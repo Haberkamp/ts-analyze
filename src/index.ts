@@ -1,6 +1,11 @@
 #!/usr/bin/env node
 
-import { cruise, type IModule, type IReporterOutput, type IResolveOptions } from 'dependency-cruiser';
+import {
+	cruise,
+	type IModule,
+	type IReporterOutput,
+	type IResolveOptions,
+} from 'dependency-cruiser';
 import { Command } from '@commander-js/extra-typings';
 import extractWebpackResolveConfig from 'dependency-cruiser/config-utl/extract-webpack-resolve-config';
 import extractTSConfig from 'dependency-cruiser/config-utl/extract-ts-config';
@@ -16,14 +21,16 @@ const options = program.opts();
 // TODO: handle error
 const webpackConfig = options.webpackConfig
 	? // @ts-expect-error -- dependency-cruiser does not provide correct typings
-	  await extractWebpackResolveConfig(options.webpackConfig) as IResolveOptions
+	  ((await extractWebpackResolveConfig(
+			options.webpackConfig,
+	  )) as IResolveOptions)
 	: undefined;
 
 type TSConfig = unknown;
 
 const tsConfig = options.tsConfig
 	? // @ts-expect-error -- dependency-cruiser does not provide the correct typings
-	  extractTSConfig(options.tsConfig) as TSConfig
+	  (extractTSConfig(options.tsConfig) as TSConfig)
 	: undefined;
 
 const cruiseResult: IReporterOutput = await cruise(
@@ -31,7 +38,7 @@ const cruiseResult: IReporterOutput = await cruise(
 	{
 		includeOnly: '^src',
 		ruleSet: {
-			// @ts-ignore
+			// @ts-expect-error -- code works as expected typings of dependency-cruiser are wrong
 			options: {
 				doNotFollow: { path: 'node_modules' },
 				tsPreCompilationDeps: tsConfig ? true : undefined,
