@@ -8,7 +8,8 @@
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"build": "tsc",
 		"format": "prettier . --write --cache",
-		"format:check": "prettier . --check --cache"
+		"format:check": "prettier . --check --cache",
+		"lint": "eslint ."
 	},
 	"bin": "./dist/index.js",
 	"keywords": [],
@@ -16,10 +17,15 @@
 	"license": "MIT",
 	"devDependencies": {
 		"@types/node": "^20.8.7",
+		"@typescript-eslint/eslint-plugin": "^6.9.1",
+		"@typescript-eslint/parser": "^6.9.1",
+		"eslint": "^8.52.0",
+		"eslint-config-prettier": "^9.0.0",
 		"prettier": "^3.0.3",
 		"typescript": "^5.2.2"
 	},
 	"dependencies": {
+		"@commander-js/extra-typings": "^11.1.0",
 		"commander": "^11.1.0",
 		"dependency-cruiser": "^15.0.0"
 	}
