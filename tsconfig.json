@@ -28,6 +28,6 @@
 			"@/src/*": ["./src/*"]
 		}
 	},
-	"include": ["./src/**/*.ts"],
+	"include": ["./src/**/*.ts", "./.eslintrc.cjs"],
 	"exclude": ["node_modules"]
 }

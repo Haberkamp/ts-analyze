@@ -8,7 +8,8 @@
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"build": "tsc",
 		"format": "prettier . --write --cache",
-		"format:check": "prettier . --check --cache"
+		"format:check": "prettier . --check --cache",
+		"lint": "eslint ."
 	},
 	"bin": "./dist/index.js",
 	"keywords": [],
