@@ -14,11 +14,11 @@ program.parse(process.argv);
 const options = program.opts();
 
 // TODO: handle error
-const webpackConfig = !!options.webpackConfig
+const webpackConfig = options.webpackConfig
 	? // @ts-ignore
 	  await extractWebpackResolveConfig(options.webpackConfig)
 	: undefined;
-const tsConfig = !!options.tsConfig
+const tsConfig = options.tsConfig
 	? // @ts-ignore
 	  extractTSConfig(options.tsConfig)
 	: undefined;
