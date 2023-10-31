@@ -19,9 +19,11 @@ const webpackConfig = options.webpackConfig
 	  await extractWebpackResolveConfig(options.webpackConfig) as IResolveOptions
 	: undefined;
 
+type TSConfig = unknown;
+
 const tsConfig = options.tsConfig
-	? // @ts-ignore
-	  extractTSConfig(options.tsConfig)
+	? // @ts-expect-error -- dependency-cruiser does not provide the correct typings
+	  extractTSConfig(options.tsConfig) as TSConfig
 	: undefined;
 
 const cruiseResult: IReporterOutput = await cruise(
