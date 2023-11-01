@@ -10,7 +10,9 @@
 		"lint": "eslint .",
 		"preinstall": "npx only-allow pnpm"
 	},
-	"bin": "./dist/index.js",
+	"bin": {
+		"ts-analyze": "dist/index.js"
+	},
 	"files": [
 		"./dist"
 	],
