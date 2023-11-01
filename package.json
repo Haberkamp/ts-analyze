@@ -1,11 +1,9 @@
 {
 	"name": "ts-analyze",
-	"version": "1.0.0",
-	"description": "",
-	"main": "index.js",
+	"version": "0.1.0",
+	"description": "A CLI tool to help migrating a JavaScript project over to TypeScript",
 	"type": "module",
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1",
 		"build": "tsc",
 		"format": "prettier . --write --cache",
 		"format:check": "prettier . --check --cache",
@@ -13,6 +11,9 @@
 		"preinstall": "npx only-allow pnpm"
 	},
 	"bin": "./dist/index.js",
+	"files": [
+		"./dist"
+	],
 	"keywords": [],
 	"author": "Nils Haberkamp",
 	"license": "MIT",
