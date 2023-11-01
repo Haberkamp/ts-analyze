@@ -2,7 +2,6 @@
 	"name": "ts-analyze",
 	"version": "0.1.0",
 	"description": "",
-	"main": "index.js",
 	"type": "module",
 	"scripts": {
 		"build": "tsc",
