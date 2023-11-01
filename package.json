@@ -9,7 +9,8 @@
 		"build": "tsc",
 		"format": "prettier . --write --cache",
 		"format:check": "prettier . --check --cache",
-		"lint": "eslint ."
+		"lint": "eslint .",
+		"preinstall": "npx only-allow pnpm"
 	},
 	"bin": "./dist/index.js",
 	"keywords": [],
