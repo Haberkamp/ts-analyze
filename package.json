@@ -8,6 +8,7 @@
 		"format": "prettier . --write --cache",
 		"format:check": "prettier . --check --cache",
 		"lint": "eslint .",
+		"test": "vitest run",
 		"preinstall": "npx only-allow pnpm"
 	},
 	"bin": {
@@ -26,7 +27,9 @@
 		"eslint": "^8.52.0",
 		"eslint-config-prettier": "^9.0.0",
 		"prettier": "^3.0.3",
-		"typescript": "^5.2.2"
+		"typescript": "^5.2.2",
+		"vite": "^4.5.0",
+		"vitest": "^0.34.6"
 	},
 	"dependencies": {
 		"@commander-js/extra-typings": "^11.1.0",
