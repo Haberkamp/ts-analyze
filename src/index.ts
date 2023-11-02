@@ -9,8 +9,8 @@ import {
 import { Command } from '@commander-js/extra-typings';
 import extractWebpackResolveConfig from 'dependency-cruiser/config-utl/extract-webpack-resolve-config';
 import extractTSConfig from 'dependency-cruiser/config-utl/extract-ts-config';
-import type { FileResult } from '@/src/types/fileResult.ts';
-import FileSorter from './core/FileSorter.js';
+import type { FileResult } from '@/src/types/fileResult.js';
+import FileSorter from '@/src/core/sorting/FileSorter.js';
 
 const program = new Command()
 	.option('--webpack-config <path>', undefined)
