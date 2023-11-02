@@ -9,6 +9,7 @@ import {
 import { Command } from '@commander-js/extra-typings';
 import extractWebpackResolveConfig from 'dependency-cruiser/config-utl/extract-webpack-resolve-config';
 import extractTSConfig from 'dependency-cruiser/config-utl/extract-ts-config';
+import type { FileResult } from '@/src/types/fileResult.ts';
 
 const program = new Command()
 	.option('--webpack-config <path>', undefined)
@@ -59,15 +60,6 @@ if (migrationCompleted) {
 	console.log('Migration completed!');
 	process.exit(0);
 }
-
-type FileResult = {
-	// path to the file
-	source: string;
-	// the amount of dependencies the files has
-	dependencies: number;
-	// the amount of files that are dependent on this file
-	dependents: number;
-};
 
 function countDependencies(module: IModule): string[] {
 	return module.dependencies.reduce<string[]>((accumulator, dependency) => {
