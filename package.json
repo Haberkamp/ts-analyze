@@ -8,6 +8,7 @@
 		"format": "prettier . --write --cache",
 		"format:check": "prettier . --check --cache",
 		"lint": "eslint .",
+		"test": "vitest run",
 		"preinstall": "npx only-allow pnpm"
 	},
 	"bin": {
