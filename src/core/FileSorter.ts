@@ -8,6 +8,10 @@ export default class FileSorter implements FileSorterInterface {
 			if (firstFile.dependencies < secondFile.dependencies) return -1;
 			if (firstFile.dependencies > secondFile.dependencies) return 1;
 
+			// return by their number of dependents (descending)
+			if (firstFile.dependents > secondFile.dependents) return -1;
+			if (firstFile.dependents < secondFile.dependents) return 1;
+
 			return 0;
 		});
 	}

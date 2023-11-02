@@ -38,7 +38,40 @@ describe('src/core/FileSorter.ts', () => {
 		]);
 	});
 
-	it.todo('should sort files by their number of dependents (descending)');
+	it('should sort files by their number of dependents (descending)', () => {
+		// ARRANGE
+		const files: FileResult[] = [
+			{
+				source: 'a.js',
+				dependencies: 0,
+				dependents: 1,
+			},
+			{
+				source: 'b.js',
+				dependencies: 0,
+				dependents: 2,
+			},
+		];
+
+		const sorter = new FileSorter();
+
+		// ACT
+		const result = sorter.sort(files);
+
+		// ASSERT
+		expect(result).toStrictEqual([
+			{
+				source: 'b.js',
+				dependencies: 0,
+				dependents: 2,
+			},
+			{
+				source: 'a.js',
+				dependencies: 0,
+				dependents: 1,
+			},
+		]);
+	});
 
 	it.todo('should sort files by their file name in alphabetical order');
 });
