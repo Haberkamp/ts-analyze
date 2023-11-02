@@ -12,7 +12,7 @@ export default class FileSorter implements FileSorterInterface {
 			if (firstFile.dependents > secondFile.dependents) return -1;
 			if (firstFile.dependents < secondFile.dependents) return 1;
 
-			return 0;
+			return firstFile.source.localeCompare(secondFile.source);
 		});
 	}
 }
