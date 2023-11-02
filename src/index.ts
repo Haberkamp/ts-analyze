@@ -9,6 +9,8 @@ import {
 import { Command } from '@commander-js/extra-typings';
 import extractWebpackResolveConfig from 'dependency-cruiser/config-utl/extract-webpack-resolve-config';
 import extractTSConfig from 'dependency-cruiser/config-utl/extract-ts-config';
+import type { FileResult } from '@/src/types/fileResult.ts';
+import FileSorter from './core/FileSorter.js';
 
 const program = new Command()
 	.option('--webpack-config <path>', undefined)
@@ -60,15 +62,6 @@ if (migrationCompleted) {
 	process.exit(0);
 }
 
-type FileResult = {
-	// path to the file
-	source: string;
-	// the amount of dependencies the files has
-	dependencies: number;
-	// the amount of files that are dependent on this file
-	dependents: number;
-};
-
 function countDependencies(module: IModule): string[] {
 	return module.dependencies.reduce<string[]>((accumulator, dependency) => {
 		if (typeof cruiseResult.output === 'string') throw new Error('lul');
@@ -109,8 +102,8 @@ function countDependents(module: IModule): string[] {
 	}, []);
 }
 
-const result = cruiseResult.output.modules
-	.reduce<Array<FileResult>>((accumulator, moduleReport) => {
+const result = cruiseResult.output.modules.reduce<Array<FileResult>>(
+	(accumulator, moduleReport) => {
 		const isTypeScriptFile = moduleReport.source.endsWith('.ts');
 		if (isTypeScriptFile) return accumulator;
 
@@ -128,18 +121,11 @@ const result = cruiseResult.output.modules
 				dependents: dependentsCount,
 			},
 		];
-	}, [])
-	.sort((a, b) => {
-		// 1. sort by dependencies (ascending)
-		// 2. sort by dependents (descending)
-		// 3. sort by source (ascending)
-		if (a.dependencies > b.dependencies) return 1;
-		if (a.dependencies < b.dependencies) return -1;
+	},
+	[],
+);
 
-		if (a.dependents > b.dependents) return -1;
-		if (a.dependents < b.dependents) return 1;
+const fileSorter = new FileSorter();
+const sortedResult = fileSorter.sort(result);
 
-		return a.source.localeCompare(b.source);
-	});
-
-console.table(result);
+console.table(sortedResult);
