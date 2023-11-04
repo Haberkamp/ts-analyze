@@ -117,7 +117,6 @@ describe('src/core/analysis/dependency/DependencyCounter.ts', () => {
 				],
 				dependents: [],
 			},
-			// TODO: if the object below is commented out the test still passes. Not intended.
 			{
 				source: 'c.js',
 				valid: true,
@@ -136,7 +135,6 @@ describe('src/core/analysis/dependency/DependencyCounter.ts', () => {
 		expect(result).toBe(2);
 	});
 
-	// TODO: add .each() -- ts file in root, path and leaf
 	it('should skip counting .ts files', () => {
 		// ARRANGE
 		const allModules: IModule[] = [
