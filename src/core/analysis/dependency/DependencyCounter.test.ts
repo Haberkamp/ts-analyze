@@ -136,6 +136,53 @@ describe('src/core/analysis/dependency/DependencyCounter.ts', () => {
 		expect(result).toBe(2);
 	});
 
+	// TODO: add .each() -- ts file in root, path and leaf
+	it('should skip counting .ts files', () => {
+		// ARRANGE
+		const allModules: IModule[] = [
+			{
+				source: 'a.js',
+				valid: true,
+				dependencies: [
+					{
+						circular: false,
+						coreModule: false,
+						couldNotResolve: false,
+						dependencyTypes: [],
+						dynamic: false,
+						exoticallyRequired: false,
+						followable: false,
+						module: './b.ts',
+						resolved: 'b.ts',
+						protocol: 'file:',
+						mimeType: 'application/javascript',
+						moduleSystem: 'es6',
+						valid: true,
+						instability: 0,
+					},
+				],
+				dependents: [],
+			},
+			{
+				source: 'b.ts',
+				valid: true,
+				dependencies: [],
+				dependents: ['a.js'],
+			},
+		];
+
+		const module = allModules.at(0);
+		if (!module) throw new Error('Failed to locate module');
+
+		const counter = new DependencyCounter();
+
+		// ACT
+		const result = counter.countDependencies(module, allModules);
+
+		// ASSERT
+		expect(result).toBe(0);
+	});
+
 	it('should count dependency only once if it occurs multiple times in the dependency tree', () => {
 		// ARRANGE
 		const allModules: IModule[] = [

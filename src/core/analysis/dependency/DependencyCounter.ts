@@ -11,9 +11,14 @@ export default class DependencyCounter implements DependencyCounterInterface {
 
 	private analyze(module: IModule, allModules: IModule[]): string[] {
 		return module.dependencies.reduce<string[]>((accumulator, dependency) => {
-			const dependenciesOfDependency = allModules.filter(
-				(currentModule) => currentModule.source === dependency.resolved,
-			);
+			const dependenciesOfDependency = allModules.filter((currentModule) => {
+				const isDependencyOfDependency =
+					currentModule.source === dependency.resolved;
+
+				const isJavaScriptDependency = dependency.resolved.endsWith('.js');
+
+				return isDependencyOfDependency && isJavaScriptDependency;
+			});
 
 			const result = dependenciesOfDependency.reduce<string[]>(
 				(accumulator, currentModule) => {
@@ -24,7 +29,12 @@ export default class DependencyCounter implements DependencyCounterInterface {
 				[],
 			);
 
-			return [...accumulator, dependency.resolved, ...result];
+			const isJavaScriptDependency = dependency.resolved.endsWith('.js');
+			if (isJavaScriptDependency) {
+				return [...accumulator, dependency.resolved, ...result];
+			}
+
+			return [...accumulator, ...result];
 		}, []);
 	}
 }
