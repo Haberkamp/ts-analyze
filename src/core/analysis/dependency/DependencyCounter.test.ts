@@ -16,8 +16,7 @@ describe('src/core/analysis/dependency/DependencyCounter.ts', () => {
 			},
 		];
 
-		const module = allModules.at(0);
-		if (!module) throw new Error('Failed to locate module');
+		const module = allModules.at(0) as IModule;
 
 		// ACT
 		const result = counter.countDependencies(module, allModules);
@@ -56,8 +55,7 @@ describe('src/core/analysis/dependency/DependencyCounter.ts', () => {
 			},
 		];
 
-		const module = allModules.at(0);
-		if (!module) throw new Error('Failed to locate module');
+		const module = allModules.at(0) as IModule;
 
 		// ACT
 		const result = counter.countDependencies(module, allModules);
@@ -125,8 +123,7 @@ describe('src/core/analysis/dependency/DependencyCounter.ts', () => {
 			},
 		];
 
-		const module = allModules.at(0);
-		if (!module) throw new Error('Failed to locate module');
+		const module = allModules.at(0) as IModule;
 
 		// ACT
 		const result = counter.countDependencies(module, allModules);
@@ -169,8 +166,7 @@ describe('src/core/analysis/dependency/DependencyCounter.ts', () => {
 			},
 		];
 
-		const module = allModules.at(0);
-		if (!module) throw new Error('Failed to locate module');
+		const module = allModules.at(0) as IModule;
 
 		const counter = new DependencyCounter();
 
@@ -254,8 +250,7 @@ describe('src/core/analysis/dependency/DependencyCounter.ts', () => {
 			},
 		];
 
-		const module = allModules.at(0);
-		if (!module) throw new Error('Failed to locate module');
+		const module = allModules.at(0) as IModule;
 
 		const counter = new DependencyCounter();
 
