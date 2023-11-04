@@ -1,5 +1,5 @@
-import type FileSorterInterface from '@/src/core/FileSorterInterface.ts';
-import type { FileResult } from '../types/fileResult.ts';
+import type FileSorterInterface from '@/src/core/sorting/FileSorterInterface.js';
+import type { FileResult } from '@/src/types/fileResult.js';
 
 export default class FileSorter implements FileSorterInterface {
 	sort(unsortedFiles: FileResult[]): FileResult[] {

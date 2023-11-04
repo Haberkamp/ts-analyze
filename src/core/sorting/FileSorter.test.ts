@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import FileSorter from './FileSorter.js';
-import type { FileResult } from '../types/fileResult.js';
+import type { FileResult } from '@/src/types/fileResult.js';
 
-describe('src/core/FileSorter.ts', () => {
+describe('src/core/sorting/FileSorter.ts', () => {
 	it('should sort files by their number of dependencies (ascending)', () => {
 		// ARRANGE
 		const files: FileResult[] = [

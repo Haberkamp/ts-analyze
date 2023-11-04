@@ -9,8 +9,9 @@ import {
 import { Command } from '@commander-js/extra-typings';
 import extractWebpackResolveConfig from 'dependency-cruiser/config-utl/extract-webpack-resolve-config';
 import extractTSConfig from 'dependency-cruiser/config-utl/extract-ts-config';
-import type { FileResult } from '@/src/types/fileResult.ts';
-import FileSorter from './core/FileSorter.js';
+import type { FileResult } from '@/src/types/fileResult.js';
+import FileSorter from './core/sorting/FileSorter.js';
+import DependencyCounter from './core/analysis/dependency/DependencyCounter.js';
 
 const program = new Command()
 	.option('--webpack-config <path>', undefined)
@@ -62,26 +63,6 @@ if (migrationCompleted) {
 	process.exit(0);
 }
 
-function countDependencies(module: IModule): string[] {
-	return module.dependencies.reduce<string[]>((accumulator, dependency) => {
-		if (typeof cruiseResult.output === 'string') throw new Error('lul');
-		const dependenciesOfDependency = cruiseResult.output.modules.filter(
-			(currentModule) => currentModule.source === dependency.resolved,
-		);
-
-		const result = dependenciesOfDependency.reduce<string[]>(
-			(accumulator, currentModule) => {
-				const deps = countDependencies(currentModule);
-
-				return [...accumulator, ...deps];
-			},
-			[],
-		);
-
-		return [...accumulator, dependency.resolved, ...result];
-	}, []);
-}
-
 function countDependents(module: IModule): string[] {
 	return module.dependents.reduce<string[]>((accumulator, dependent) => {
 		if (typeof cruiseResult.output === 'string') throw new Error('lul');
@@ -102,22 +83,28 @@ function countDependents(module: IModule): string[] {
 	}, []);
 }
 
+const dependencyCounter = new DependencyCounter();
+
 const result = cruiseResult.output.modules.reduce<Array<FileResult>>(
 	(accumulator, moduleReport) => {
 		const isTypeScriptFile = moduleReport.source.endsWith('.ts');
 		if (isTypeScriptFile) return accumulator;
 
-		const deps = countDependencies(moduleReport);
+		if (typeof cruiseResult.output === 'string') throw new Error('lul');
+
+		const dependencyCount = dependencyCounter.countDependencies(
+			moduleReport,
+			cruiseResult.output.modules,
+		);
 		const dependents = countDependents(moduleReport);
 
-		const depsCount = new Set(deps).size;
 		const dependentsCount = new Set(dependents).size;
 
 		return [
 			...accumulator,
 			{
 				source: moduleReport.source,
-				dependencies: depsCount,
+				dependencies: dependencyCount,
 				dependents: dependentsCount,
 			},
 		];
