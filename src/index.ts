@@ -14,12 +14,14 @@ import FileSorter from './core/sorting/FileSorter.js';
 import DependencyCounter from './core/analysis/dependency/DependencyCounter.js';
 
 const program = new Command()
+	.argument('<directories...>', 'directories to analyze')
 	.option('--webpack-config <path>', undefined)
 	.option('--ts-config <path>', undefined);
 
 program.parse(process.argv);
 
 const options = program.opts();
+const args = program.args;
 
 // TODO: handle error
 const webpackConfig = options.webpackConfig
@@ -36,10 +38,14 @@ const tsConfig = options.tsConfig
 	  (extractTSConfig(options.tsConfig) as TSConfig)
 	: undefined;
 
+const modifiedDirectoryPaths = args.map((path) => {
+	return path.replace(/^\.\//, '').replace(/\/$/, '');
+});
+
 const cruiseResult: IReporterOutput = await cruise(
-	['src'],
+	modifiedDirectoryPaths,
 	{
-		includeOnly: '^src',
+		includeOnly: modifiedDirectoryPaths.map((path) => `^${path}`),
 		ruleSet: {
 			// @ts-expect-error -- code works as expected typings of dependency-cruiser are wrong
 			options: {
