@@ -2,6 +2,8 @@
 
 A CLI tool to help migrating a JavaScript project over to TypeScript
 
+![ts-analyze analysis report](./showcase.gif)
+
 > NOTE: This project is in it's early stages. The API is subject to
 > subject to change and may happen without notice.
 
