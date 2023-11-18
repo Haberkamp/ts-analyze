@@ -140,7 +140,5 @@ console.log(
 	)}% -- ${amountOfTSFiles} out of ${totalFiles} files converted`,
 );
 
-const amountOfNextFiles = sortedResult.length > 5 ? sortedResult.length : 5;
-
-console.log(`Next ${amountOfNextFiles} files to convert:`);
-console.table(sortedResult.splice(0, amountOfNextFiles));
+console.log(`Next ${sortedResult.length} files to convert:`);
+console.table(sortedResult.splice(0, sortedResult.length));
