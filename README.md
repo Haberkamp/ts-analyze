@@ -5,6 +5,8 @@ A CLI tool to help migrating a JavaScript project over to TypeScript
 > NOTE: This project is in it's early stages. The API is subject to
 > subject to change and may happen without notice.
 
+![ts-analyze analysis report](./showcase.gif)
+
 ## Usage
 
 ```shell
