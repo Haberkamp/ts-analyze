@@ -59,7 +59,8 @@ const cruiseResult: IReporterOutput = await cruise(
 	{ tsConfig },
 );
 
-if (typeof cruiseResult.output === 'string') throw new Error('lul');
+if (typeof cruiseResult.output === 'string')
+	throw new Error('Failed to analyze project; Output is a string.');
 
 const migrationCompleted = cruiseResult.output.modules.every((module) =>
 	module.source.includes('.ts'),
@@ -71,7 +72,9 @@ if (migrationCompleted) {
 
 function countDependents(module: IModule): string[] {
 	return module.dependents.reduce<string[]>((accumulator, dependent) => {
-		if (typeof cruiseResult.output === 'string') throw new Error('lul');
+		if (typeof cruiseResult.output === 'string')
+			throw new Error('Failed to analyze project; Output is a string.');
+
 		const dependentsOfDependent = cruiseResult.output.modules.filter(
 			(currentModule) => currentModule.source === dependent,
 		);
@@ -96,7 +99,8 @@ const result = cruiseResult.output.modules.reduce<Array<FileResult>>(
 		const isTypeScriptFile = moduleReport.source.endsWith('.ts');
 		if (isTypeScriptFile) return accumulator;
 
-		if (typeof cruiseResult.output === 'string') throw new Error('lul');
+		if (typeof cruiseResult.output === 'string')
+			throw new Error('Failed to analyze project; Output is a string.');
 
 		const dependencyCount = dependencyCounter.countDependencies(
 			moduleReport,
