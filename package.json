@@ -1,6 +1,6 @@
 {
 	"name": "ts-analyze",
-	"version": "0.2.2",
+	"version": "0.2.3",
 	"description": "A CLI tool to help migrating a JavaScript project over to TypeScript",
 	"type": "module",
 	"scripts": {
