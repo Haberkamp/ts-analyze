@@ -125,4 +125,22 @@ const result = cruiseResult.output.modules.reduce<Array<FileResult>>(
 const fileSorter = new FileSorter();
 const sortedResult = fileSorter.sort(result);
 
-console.table(sortedResult);
+const totalFiles = cruiseResult.output.modules.length;
+const amountOfTSFiles = cruiseResult.output.modules.filter((file) =>
+	file.source.endsWith('.ts'),
+).length;
+
+const progress =
+	amountOfTSFiles === 0 ? 0 : (amountOfTSFiles / totalFiles) * 100;
+
+console.log('Summary');
+console.log(
+	`Progress: ${Math.floor(
+		progress,
+	)}% -- ${amountOfTSFiles} out of ${totalFiles} files converted`,
+);
+
+const amountOfNextFiles = sortedResult.length > 5 ? sortedResult.length : 5;
+
+console.log(`Next ${amountOfNextFiles} files to convert:`);
+console.table(sortedResult.splice(0, amountOfNextFiles));
