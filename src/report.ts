@@ -20,10 +20,19 @@ export interface WhyReportInput {
 }
 
 const DEFAULT_REPORT_LIMIT = 10;
+const ansi = {
+  bgYellow: "\u001b[43m",
+  blue: "\u001b[34m",
+  bold: "\u001b[1m",
+  gray: "\u001b[90m",
+  reset: "\u001b[0m",
+  white: "\u001b[97m",
+};
 
 export function formatMigrationReport(input: ReportInput): string {
-  const lines: string[] = ["Migration Order:"];
+  const lines: string[] = [];
   const reportLimit = input.reportLimit ?? DEFAULT_REPORT_LIMIT;
+  pushHeader(lines, "Migration Order:");
   const migrationSteps = input.plan.steps
     .map((step) => {
       const files = step.files.filter((file) => !isTypeScriptFile(file));
@@ -35,17 +44,21 @@ export function formatMigrationReport(input: ReportInput): string {
     .filter((step) => step.files.length > 0);
 
   const visibleMigrationSteps = limitReports(migrationSteps, reportLimit);
+  const migrationMarkerWidth = markerWidth(visibleMigrationSteps.items.length);
   visibleMigrationSteps.items.forEach((step, index) => {
+    const suffix = step.isCycle ? " (cycle group, migrate together)" : "";
     lines.push(
-      `${index + 1}. ${formatFiles(step.files, input.basePath)}${
-        step.isCycle ? " (cycle group, migrate together)" : ""
-      }`,
+      formatListItem(
+        index + 1,
+        `${formatFiles(step.files, input.basePath)}${suffix}`,
+        migrationMarkerWidth,
+      ),
     );
   });
   pushLimitInfo(lines, visibleMigrationSteps, reportLimit);
 
   if (migrationSteps.length === 0) {
-    lines.push("(no files found)");
+    lines.push(formatContent("(no files found)"));
   }
 
   const cycles = input.plan.cycles
@@ -53,10 +66,17 @@ export function formatMigrationReport(input: ReportInput): string {
     .filter((cycle) => isCycle(cycle, input.graph));
 
   if (cycles.length > 0) {
-    lines.push("", "Circular Dependencies:");
+    pushHeader(lines, "Circular Dependencies:");
     const visibleCycles = limitReports(cycles, reportLimit);
+    const cycleMarkerWidth = markerWidth(visibleCycles.items.length);
     visibleCycles.items.forEach((cycle, index) => {
-      lines.push(`${index + 1}. ${formatFiles(cycle, input.basePath)}`);
+      lines.push(
+        formatListItem(
+          index + 1,
+          formatFiles(cycle, input.basePath),
+          cycleMarkerWidth,
+        ),
+      );
     });
     pushLimitInfo(lines, visibleCycles, reportLimit);
   }
@@ -65,13 +85,25 @@ export function formatMigrationReport(input: ReportInput): string {
     input.graph,
   );
   if (typeScriptFilesWithJsDependencies.length > 0) {
-    lines.push("", "Warning: TypeScript Files With JavaScript Dependencies:");
+    pushWarningHeader(
+      lines,
+      "TypeScript Files With JavaScript Dependencies:",
+    );
     const visibleTypeScriptFilesWithJsDependencies = limitReports(
       typeScriptFilesWithJsDependencies,
       reportLimit,
     );
+    const typeScriptWarningMarkerWidth = markerWidth(
+      visibleTypeScriptFilesWithJsDependencies.items.length,
+    );
     visibleTypeScriptFilesWithJsDependencies.items.forEach((item, index) => {
-      lines.push(`${index + 1}. ${relativePath(item.file, input.basePath)}`);
+      lines.push(
+        formatListItem(
+          index + 1,
+          relativePath(item.file, input.basePath),
+          typeScriptWarningMarkerWidth,
+        ),
+      );
     });
     pushLimitInfo(
       lines,
@@ -79,18 +111,24 @@ export function formatMigrationReport(input: ReportInput): string {
       reportLimit,
     );
     lines.push(
-      "Info: Run `ts-analyze why <file>` to explain why a listed TypeScript file is non-leaf.",
+      formatInfoBanner(
+        "Run `ts-analyze why <file>` to explain why a listed TypeScript file is non-leaf.",
+      ),
     );
   }
 
   if (input.manualReview.length > 0) {
-    lines.push("", "Manual Review:");
+    pushHeader(lines, "Manual Review:");
     const visibleManualReview = limitReports(input.manualReview, reportLimit);
+    const manualReviewMarkerWidth = markerWidth(visibleManualReview.items.length);
     visibleManualReview.items.forEach((item, index) => {
+      const file = relativePath(item.file, input.basePath);
       lines.push(
-        `${index + 1}. ${relativePath(item.file, input.basePath)} - ${
-          item.reason
-        }: ${item.detail}`,
+        formatListItem(
+          index + 1,
+          `${file} - ${item.reason}: ${item.detail}`,
+          manualReviewMarkerWidth,
+        ),
       );
     });
     pushLimitInfo(lines, visibleManualReview, reportLimit);
@@ -117,16 +155,74 @@ export function formatWhyReport(input: WhyReportInput): string {
     return `No JavaScript dependencies found for ${formattedFile}.`;
   }
 
-  const lines = [`Why ${formattedFile} is listed:`];
-  jsDependencies.forEach((dependency) => {
+  const lines: string[] = [];
+  pushHeader(lines, `Why ${formattedFile} is listed:`);
+  const whyMarkerWidth = markerWidth(jsDependencies.length * 2);
+  jsDependencies.forEach((dependency, index) => {
     const formattedDependency = relativePath(dependency, input.basePath);
-    lines.push(`${lines.length}. ${formattedFile} imports ${formattedDependency}`);
     lines.push(
-      `${lines.length}. ${formattedDependency} is JavaScript, so ${formattedFile} is not a TypeScript leaf.`,
+      formatListItem(
+        index * 2 + 1,
+        `${formattedFile} imports ${formattedDependency}`,
+        whyMarkerWidth,
+      ),
+    );
+    lines.push(
+      formatListItem(
+        index * 2 + 2,
+        `${formattedDependency} is JavaScript, so ${formattedFile} is not a TypeScript leaf.`,
+        whyMarkerWidth,
+      ),
     );
   });
 
   return lines.join("\n");
+}
+
+function pushHeader(lines: string[], title: string): void {
+  if (lines.length > 0) {
+    lines.push("", "");
+  }
+
+  lines.push(`${ansi.bold}${title}${ansi.reset}`, "");
+}
+
+function pushWarningHeader(lines: string[], title: string): void {
+  if (lines.length > 0) {
+    lines.push("", "");
+  }
+
+  const heading = `  [Warning]: ${title}  `;
+  const padding = " ".repeat(heading.length);
+  lines.push(
+    `${ansi.bgYellow}${padding}${ansi.reset}`,
+    `${ansi.bgYellow}${ansi.blue}${ansi.bold}${heading}${ansi.reset}`,
+    `${ansi.bgYellow}${padding}${ansi.reset}`,
+    "",
+  );
+}
+
+function formatListItem(index: number, content: string, width: number): string {
+  const marker = `${index.toString().padStart(width, " ")}.`;
+
+  return `${ansi.gray}${marker}${ansi.reset} ${formatContent(content)}`;
+}
+
+function formatContent(content: string): string {
+  return `${ansi.white}${content}${ansi.reset}`;
+}
+
+function formatInfoBanner(message: string): string {
+  const label = `${ansi.bold}[Info]:${ansi.reset}`;
+
+  return [
+    `${ansi.gray}${ansi.reset}`,
+    `${ansi.gray}  ${label}${ansi.gray} ${message}  ${ansi.reset}`,
+  ].join("\n");
+}
+
+function markerWidth(itemCount: number): number {
+  return Math.max(1, itemCount.toString().length);
 }
 
 function formatFiles(files: string[], basePath: string): string {
@@ -154,7 +250,9 @@ function pushLimitInfo<T>(
   }
 
   lines.push(
-    `Info: Showing ${reportLimit} of ${result.total} reports. Configure with \`--report-limit <number>\` or disable with \`--no-report-limit\`.`,
+    formatInfoBanner(
+      `Showing ${reportLimit} of ${result.total} reports. Configure with \`--report-limit <number>\` or disable with \`--no-report-limit\`.`,
+    ),
   );
 }
 

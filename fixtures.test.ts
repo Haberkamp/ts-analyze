@@ -18,6 +18,14 @@ import type { ReportInput } from "./src/report.js";
 const repoRoot = path.dirname(fileURLToPath(import.meta.url));
 const fixturesRoot = path.join(repoRoot, "fixtures");
 const temporaryFixtures: string[] = [];
+const ansi = {
+  bgYellow: "\u001b[43m",
+  blue: "\u001b[34m",
+  bold: "\u001b[1m",
+  gray: "\u001b[90m",
+  reset: "\u001b[0m",
+  white: "\u001b[97m",
+};
 
 afterEach(() => {
   for (const fixtureRoot of temporaryFixtures.splice(0)) {
@@ -44,12 +52,14 @@ describe("fixtures", () => {
       const plan = determineMigrationOrder(graphResult.graph);
 
       expect(
-        formatMigrationReport({
-          plan,
-          graph: graphResult.graph,
-          manualReview: graphResult.manualReview,
-          basePath: projectConfig.basePath,
-        }),
+        stripAnsi(
+          formatMigrationReport({
+            plan,
+            graph: graphResult.graph,
+            manualReview: graphResult.manualReview,
+            basePath: projectConfig.basePath,
+          }),
+        ),
       ).toMatchSnapshot();
     });
   }
@@ -61,26 +71,33 @@ describe("TypeScript files with JavaScript dependencies", () => {
     const { graphResult, plan, projectConfig } = analyzeFixture(fixtureRoot);
 
     expect(
-      formatMigrationReport({
-        plan,
-        graph: graphResult.graph,
-        manualReview: graphResult.manualReview,
-        basePath: projectConfig.basePath,
-      }),
+      stripAnsi(
+        formatMigrationReport({
+          plan,
+          graph: graphResult.graph,
+          manualReview: graphResult.manualReview,
+          basePath: projectConfig.basePath,
+        }),
+      ),
     ).toContain(
       [
-        "Warning: TypeScript Files With JavaScript Dependencies:",
+        "  [Warning]: TypeScript Files With JavaScript Dependencies:",
+        "",
+        "",
         "1. src/greeting.ts",
-        "Info: Run `ts-analyze why <file>` to explain why a listed TypeScript file is non-leaf.",
+        "",
+        "  [Info]: Run `ts-analyze why <file>` to explain why a listed TypeScript file is non-leaf.",
       ].join("\n"),
     );
     expect(
-      formatMigrationReport({
-        plan,
-        graph: graphResult.graph,
-        manualReview: graphResult.manualReview,
-        basePath: projectConfig.basePath,
-      }),
+      stripAnsi(
+        formatMigrationReport({
+          plan,
+          graph: graphResult.graph,
+          manualReview: graphResult.manualReview,
+          basePath: projectConfig.basePath,
+        }),
+      ),
     ).not.toContain("src/greeting.ts -> src/punctuation.js");
   });
 
@@ -89,14 +106,17 @@ describe("TypeScript files with JavaScript dependencies", () => {
     const { graphResult, projectConfig } = analyzeFixture(fixtureRoot);
 
     expect(
-      formatWhyReport({
-        file: path.join(fixtureRoot, "src", "greeting.ts"),
-        graph: graphResult.graph,
-        basePath: projectConfig.basePath,
-      }),
+      stripAnsi(
+        formatWhyReport({
+          file: path.join(fixtureRoot, "src", "greeting.ts"),
+          graph: graphResult.graph,
+          basePath: projectConfig.basePath,
+        }),
+      ),
     ).toBe(
       [
         "Why src/greeting.ts is listed:",
+        "",
         "1. src/greeting.ts imports src/punctuation.js",
         "2. src/punctuation.js is JavaScript, so src/greeting.ts is not a TypeScript leaf.",
       ].join("\n"),
@@ -105,18 +125,21 @@ describe("TypeScript files with JavaScript dependencies", () => {
 
   it("supports the why subcommand", () => {
     expect(
-      runCli(
-        [
-          "--config",
-          "fixtures/typescript-middle-js-leaf/tsconfig.json",
-          "why",
-          "fixtures/typescript-middle-js-leaf/src/greeting.ts",
-        ],
-        repoRoot,
+      stripAnsi(
+        runCli(
+          [
+            "--config",
+            "fixtures/typescript-middle-js-leaf/tsconfig.json",
+            "why",
+            "fixtures/typescript-middle-js-leaf/src/greeting.ts",
+          ],
+          repoRoot,
+        ),
       ),
     ).toBe(
       [
         "Why src/greeting.ts is listed:",
+        "",
         "1. src/greeting.ts imports src/punctuation.js",
         "2. src/punctuation.js is JavaScript, so src/greeting.ts is not a TypeScript leaf.",
       ].join("\n"),
@@ -124,15 +147,79 @@ describe("TypeScript files with JavaScript dependencies", () => {
   });
 });
 
-describe("report limits", () => {
-  it("limits each report section to 10 by default and prints guidance for truncated sections", () => {
+describe("report styling", () => {
+  it("aligns list item content without zero-padding numbers", () => {
+    const report = formatMigrationReport(makeReportInput({ stepCount: 10 }));
+    const lines = report.split("\n");
+
+    expect(lines).toContain(
+      `${ansi.gray} 1.${ansi.reset} ${ansi.white}src/file-01.js${ansi.reset}`,
+    );
+    expect(lines).toContain(
+      `${ansi.gray} 2.${ansi.reset} ${ansi.white}src/file-02.js${ansi.reset}`,
+    );
+    expect(lines).toContain(
+      `${ansi.gray}10.${ansi.reset} ${ansi.white}src/file-10.js${ansi.reset}`,
+    );
+    expect(report).not.toContain(`${ansi.gray}01.${ansi.reset}`);
+  });
+
+  it("color-codes sections, separates headers, and renders guidance as banners", () => {
     const report = formatMigrationReport(
       makeReportInput({
-        stepCount: 11,
-        cycleCount: 11,
-        typeScriptWarningCount: 11,
-        manualReviewCount: 11,
+        stepCount: 3,
+        cycleCount: 1,
+        reportLimit: 2,
       }),
+    );
+
+    expect(report).toBe(
+      [
+        `${ansi.bold}Migration Order:${ansi.reset}`,
+        "",
+        `${ansi.gray}1.${ansi.reset} ${ansi.white}src/file-01.js${ansi.reset}`,
+        `${ansi.gray}2.${ansi.reset} ${ansi.white}src/file-02.js${ansi.reset}`,
+        `${ansi.gray}${ansi.reset}`,
+        `${ansi.gray}  ${ansi.bold}[Info]:${ansi.reset}${ansi.gray} Showing 2 of 3 reports. Configure with \`--report-limit <number>\` or disable with \`--no-report-limit\`.  ${ansi.reset}`,
+        "",
+        "",
+        `${ansi.bold}Circular Dependencies:${ansi.reset}`,
+        "",
+        `${ansi.gray}1.${ansi.reset} ${ansi.white}src/cycle-01-a.js, src/cycle-01-b.js${ansi.reset}`,
+      ].join("\n"),
+    );
+  });
+
+  it("renders warning headings with yellow background and blue text", () => {
+    const report = formatMigrationReport(
+      makeReportInput({ typeScriptWarningCount: 1 }),
+    );
+    const lines = report.split("\n");
+    const headingText =
+      "  [Warning]: TypeScript Files With JavaScript Dependencies:  ";
+    const padding = " ".repeat(headingText.length);
+    const headingIndex = lines.indexOf(
+      `${ansi.bgYellow}${ansi.blue}${ansi.bold}${headingText}${ansi.reset}`,
+    );
+
+    expect(headingIndex).toBeGreaterThan(0);
+    expect(lines[headingIndex - 1]).toBe(`${ansi.bgYellow}${padding}${ansi.reset}`);
+    expect(lines[headingIndex + 1]).toBe(`${ansi.bgYellow}${padding}${ansi.reset}`);
+    expect(lines[headingIndex + 2]).toBe("");
+  });
+});
+
+describe("report limits", () => {
+  it("limits each report section to 10 by default and prints guidance for truncated sections", () => {
+    const report = stripAnsi(
+      formatMigrationReport(
+        makeReportInput({
+          stepCount: 11,
+          cycleCount: 11,
+          typeScriptWarningCount: 11,
+          manualReviewCount: 11,
+        }),
+      ),
     );
 
     expect(report).toContain("10. src/file-10.js");
@@ -146,34 +233,38 @@ describe("report limits", () => {
     expect(
       countOccurrences(
         report,
-        "Info: Showing 10 of 11 reports. Configure with `--report-limit <number>` or disable with `--no-report-limit`.",
+        "[Info]: Showing 10 of 11 reports. Configure with `--report-limit <number>` or disable with `--no-report-limit`.",
       ),
     ).toBe(4);
   });
 
   it("does not print limit guidance when a section does not exceed the limit", () => {
-    const report = formatMigrationReport(makeReportInput({ stepCount: 10 }));
+    const report = stripAnsi(
+      formatMigrationReport(makeReportInput({ stepCount: 10 })),
+    );
 
     expect(report).toContain("10. src/file-10.js");
     expect(report).not.toContain("Configure with `--report-limit <number>`");
   });
 
   it("uses a configured numeric report limit", () => {
-    const report = formatMigrationReport(
-      makeReportInput({ stepCount: 3, reportLimit: 2 }),
+    const report = stripAnsi(
+      formatMigrationReport(makeReportInput({ stepCount: 3, reportLimit: 2 })),
     );
 
     expect(report).toContain("1. src/file-01.js");
     expect(report).toContain("2. src/file-02.js");
     expect(report).not.toContain("src/file-03.js");
     expect(report).toContain(
-      "Info: Showing 2 of 3 reports. Configure with `--report-limit <number>` or disable with `--no-report-limit`.",
+      "[Info]: Showing 2 of 3 reports. Configure with `--report-limit <number>` or disable with `--no-report-limit`.",
     );
   });
 
   it("can disable report limits", () => {
-    const report = formatMigrationReport(
-      makeReportInput({ stepCount: 11, reportLimit: false }),
+    const report = stripAnsi(
+      formatMigrationReport(
+        makeReportInput({ stepCount: 11, reportLimit: false }),
+      ),
     );
 
     expect(report).toContain("11. src/file-11.js");
@@ -183,12 +274,14 @@ describe("report limits", () => {
   it("supports configuring the report limit from the CLI", () => {
     const fixtureRoot = createReportLimitFixture();
 
-    expect(runCli(["--report-limit", "2", "src"], fixtureRoot)).toBe(
+    expect(stripAnsi(runCli(["--report-limit", "2", "src"], fixtureRoot))).toBe(
       [
         "Migration Order:",
+        "",
         "1. src/file-01.js",
         "2. src/file-02.js",
-        "Info: Showing 2 of 12 reports. Configure with `--report-limit <number>` or disable with `--no-report-limit`.",
+        "",
+        "  [Info]: Showing 2 of 12 reports. Configure with `--report-limit <number>` or disable with `--no-report-limit`.",
       ].join("\n"),
     );
   });
@@ -196,7 +289,7 @@ describe("report limits", () => {
   it("supports disabling the report limit from the CLI", () => {
     const fixtureRoot = createReportLimitFixture();
 
-    const report = runCli(["--no-report-limit", "src"], fixtureRoot);
+    const report = stripAnsi(runCli(["--no-report-limit", "src"], fixtureRoot));
 
     expect(report).toContain("11. src/file-11.js");
     expect(report).toContain("12. src/file-12.js");
@@ -336,6 +429,14 @@ function createReportLimitFixture(): string {
 
 function countOccurrences(value: string, search: string): number {
   return value.split(search).length - 1;
+}
+
+function stripAnsi(value: string): string {
+  return value
+    .replace(/\u001b\[[0-9;]*m/g, "")
+    .split("\n")
+    .map((line) => (line.trim() === "" ? "" : line.trimEnd()))
+    .join("\n");
 }
 
 function formatNumber(value: number): string {

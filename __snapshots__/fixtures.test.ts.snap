@@ -2,6 +2,7 @@
 
 exports[`fixtures > matches the migration report snapshot for basic-esm 1`] = `
 "Migration Order:
+
 1. src/utils/date.js
 2. src/utils/math.js
 3. src/components/Button.js
@@ -11,6 +12,7 @@ exports[`fixtures > matches the migration report snapshot for basic-esm 1`] = `
 
 exports[`fixtures > matches the migration report snapshot for commonjs 1`] = `
 "Migration Order:
+
 1. src/text.js
 2. src/message.js
 3. src/index.js"
@@ -18,24 +20,31 @@ exports[`fixtures > matches the migration report snapshot for commonjs 1`] = `
 
 exports[`fixtures > matches the migration report snapshot for cycle 1`] = `
 "Migration Order:
+
 1. src/a.js, src/b.js (cycle group, migrate together)
 2. src/index.js
 
+
 Circular Dependencies:
+
 1. src/a.js, src/b.js"
 `;
 
 exports[`fixtures > matches the migration report snapshot for dynamic 1`] = `
 "Migration Order:
+
 1. src/literal-feature.js
 2. src/index.js
 
+
 Manual Review:
+
 1. src/index.js - non-literal dynamic import: import(\`./\${name}.js\`)"
 `;
 
 exports[`fixtures > matches the migration report snapshot for multiple-entrypoints 1`] = `
 "Migration Order:
+
 1. src/components/Layout.js
 2. src/components/Button.js
 3. src/pages/about.js
@@ -44,6 +53,7 @@ exports[`fixtures > matches the migration report snapshot for multiple-entrypoin
 
 exports[`fixtures > matches the migration report snapshot for multiple-entrypoints-nested 1`] = `
 "Migration Order:
+
 1. src/components/Layout.js
 2. src/components/Button.js
 3. src/components/Card.js
@@ -54,12 +64,14 @@ exports[`fixtures > matches the migration report snapshot for multiple-entrypoin
 
 exports[`fixtures > matches the migration report snapshot for path-alias 1`] = `
 "Migration Order:
+
 1. src/utils/math.js
 2. src/index.js"
 `;
 
 exports[`fixtures > matches the migration report snapshot for re-exports 1`] = `
 "Migration Order:
+
 1. src/label.js
 2. src/number.js
 3. src/feature.js
@@ -69,27 +81,36 @@ exports[`fixtures > matches the migration report snapshot for re-exports 1`] = `
 
 exports[`fixtures > matches the migration report snapshot for typescript-leaves 1`] = `
 "Migration Order:
+
 1. src/index.js
 2. src/summary.js"
 `;
 
 exports[`fixtures > matches the migration report snapshot for typescript-middle-js-leaf 1`] = `
 "Migration Order:
+
 1. src/punctuation.js
 2. src/index.js
 
-Warning: TypeScript Files With JavaScript Dependencies:
+
+
+  [Warning]: TypeScript Files With JavaScript Dependencies:
+
+
 1. src/greeting.ts
-Info: Run \`ts-analyze why <file>\` to explain why a listed TypeScript file is non-leaf."
+
+  [Info]: Run \`ts-analyze why <file>\` to explain why a listed TypeScript file is non-leaf."
 `;
 
 exports[`fixtures > matches the migration report snapshot for typescript-only 1`] = `
 "Migration Order:
+
 (no files found)"
 `;
 
 exports[`fixtures > matches the migration report snapshot for unresolved 1`] = `
 "Migration Order:
+
 1. src/existing.js
 2. src/index.js"
 `;
