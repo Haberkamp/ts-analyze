@@ -79,7 +79,8 @@ exports[`fixtures > matches the migration report snapshot for typescript-middle-
 2. src/index.js
 
 Warning: TypeScript Files With JavaScript Dependencies:
-1. src/greeting.ts -> src/punctuation.js"
+1. src/greeting.ts
+Info: Run \`ts-analyze why <file>\` to explain why a listed TypeScript file is non-leaf."
 `;
 
 exports[`fixtures > matches the migration report snapshot for typescript-only 1`] = `

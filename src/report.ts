@@ -10,6 +10,12 @@ export interface ReportInput {
   readonly basePath: string;
 }
 
+export interface WhyReportInput {
+  readonly file: string;
+  readonly graph: DependencyGraph;
+  readonly basePath: string;
+}
+
 export function formatMigrationReport(input: ReportInput): string {
   const lines: string[] = ["Migration Order:"];
   const migrationSteps = input.plan.steps
@@ -51,13 +57,11 @@ export function formatMigrationReport(input: ReportInput): string {
   if (typeScriptFilesWithJsDependencies.length > 0) {
     lines.push("", "Warning: TypeScript Files With JavaScript Dependencies:");
     typeScriptFilesWithJsDependencies.forEach((item, index) => {
-      lines.push(
-        `${index + 1}. ${relativePath(item.file, input.basePath)} -> ${formatFiles(
-          item.dependencies,
-          input.basePath,
-        )}`,
-      );
+      lines.push(`${index + 1}. ${relativePath(item.file, input.basePath)}`);
     });
+    lines.push(
+      "Info: Run `ts-analyze why <file>` to explain why a listed TypeScript file is non-leaf.",
+    );
   }
 
   if (input.manualReview.length > 0) {
@@ -70,6 +74,36 @@ export function formatMigrationReport(input: ReportInput): string {
       );
     });
   }
+
+  return lines.join("\n");
+}
+
+export function formatWhyReport(input: WhyReportInput): string {
+  const file = path.normalize(input.file);
+  const formattedFile = relativePath(file, input.basePath);
+
+  if (!isTypeScriptFile(file)) {
+    return `${formattedFile} is not a TypeScript file.`;
+  }
+
+  const dependencies = input.graph.get(file);
+  if (!dependencies) {
+    return `No dependency information found for ${formattedFile}.`;
+  }
+
+  const jsDependencies = [...dependencies].filter(isJavaScriptFile).sort();
+  if (jsDependencies.length === 0) {
+    return `No JavaScript dependencies found for ${formattedFile}.`;
+  }
+
+  const lines = [`Why ${formattedFile} is listed:`];
+  jsDependencies.forEach((dependency) => {
+    const formattedDependency = relativePath(dependency, input.basePath);
+    lines.push(`${lines.length}. ${formattedFile} imports ${formattedDependency}`);
+    lines.push(
+      `${lines.length}. ${formattedDependency} is JavaScript, so ${formattedFile} is not a TypeScript leaf.`,
+    );
+  });
 
   return lines.join("\n");
 }
