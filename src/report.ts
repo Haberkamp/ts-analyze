@@ -70,13 +70,23 @@ export function formatMigrationReport(input: ReportInput): string {
     const visibleCycles = limitReports(cycles, reportLimit);
     const cycleMarkerWidth = markerWidth(visibleCycles.items.length);
     visibleCycles.items.forEach((cycle, index) => {
+      const [firstFile, ...remainingFiles] = cycle;
+      if (!firstFile) {
+        return;
+      }
+
       lines.push(
         formatListItem(
           index + 1,
-          formatFiles(cycle, input.basePath),
+          relativePath(firstFile, input.basePath),
           cycleMarkerWidth,
         ),
       );
+      remainingFiles.forEach((file) => {
+        lines.push(
+          formatNestedListItem(relativePath(file, input.basePath), cycleMarkerWidth),
+        );
+      });
     });
     pushLimitInfo(lines, visibleCycles, reportLimit);
   }
@@ -206,6 +216,12 @@ function formatListItem(index: number, content: string, width: number): string {
   const marker = `${index.toString().padStart(width, " ")}.`;
 
   return `${ansi.gray}${marker}${ansi.reset} ${formatContent(content)}`;
+}
+
+function formatNestedListItem(content: string, parentWidth: number): string {
+  const indent = " ".repeat(parentWidth + 2);
+
+  return `${ansi.gray}${indent}-${ansi.reset} ${formatContent(content)}`;
 }
 
 function formatContent(content: string): string {

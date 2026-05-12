@@ -164,6 +164,25 @@ describe("report styling", () => {
     expect(report).not.toContain(`${ansi.gray}01.${ansi.reset}`);
   });
 
+  it("renders circular dependency chains as nested list items", () => {
+    const report = stripAnsi(
+      formatMigrationReport(makeReportInput({ cycleCount: 1, cycleFileCount: 3 })),
+    );
+
+    expect(report).toContain(
+      [
+        "Circular Dependencies:",
+        "",
+        "1. src/cycle-01-a.js",
+        "   - src/cycle-01-b.js",
+        "   - src/cycle-01-c.js",
+      ].join("\n"),
+    );
+    expect(report).not.toContain(
+      "src/cycle-01-a.js, src/cycle-01-b.js, src/cycle-01-c.js",
+    );
+  });
+
   it("color-codes sections, separates headers, and renders guidance as banners", () => {
     const report = formatMigrationReport(
       makeReportInput({
@@ -185,7 +204,8 @@ describe("report styling", () => {
         "",
         `${ansi.bold}Circular Dependencies:${ansi.reset}`,
         "",
-        `${ansi.gray}1.${ansi.reset} ${ansi.white}src/cycle-01-a.js, src/cycle-01-b.js${ansi.reset}`,
+        `${ansi.gray}1.${ansi.reset} ${ansi.white}src/cycle-01-a.js${ansi.reset}`,
+        `${ansi.gray}   -${ansi.reset} ${ansi.white}src/cycle-01-b.js${ansi.reset}`,
       ].join("\n"),
     );
   });
@@ -224,7 +244,9 @@ describe("report limits", () => {
 
     expect(report).toContain("10. src/file-10.js");
     expect(report).not.toContain("src/file-11.js");
-    expect(report).toContain("10. src/cycle-10-a.js, src/cycle-10-b.js");
+    expect(report).toContain(
+      ["10. src/cycle-10-a.js", "    - src/cycle-10-b.js"].join("\n"),
+    );
     expect(report).not.toContain("src/cycle-11-a.js");
     expect(report).toContain("10. src/ts-warning-10.ts");
     expect(report).not.toContain("src/ts-warning-11.ts");
@@ -339,6 +361,7 @@ function analyzeFixture(fixtureRoot: string): {
 interface ReportLimitTestOptions {
   readonly stepCount?: number;
   readonly cycleCount?: number;
+  readonly cycleFileCount?: number;
   readonly typeScriptWarningCount?: number;
   readonly manualReviewCount?: number;
   readonly reportLimit?: number | false;
@@ -360,15 +383,20 @@ function makeReportInput(options: ReportLimitTestOptions): ReportInput & {
   }
 
   for (let index = 1; index <= (options.cycleCount ?? 0); index += 1) {
-    const first = path.join(basePath, "src", `cycle-${formatNumber(index)}-a.js`);
-    const second = path.join(
-      basePath,
-      "src",
-      `cycle-${formatNumber(index)}-b.js`,
+    const files = Array.from(
+      { length: options.cycleFileCount ?? 2 },
+      (_, fileIndex) =>
+        path.join(
+          basePath,
+          "src",
+          `cycle-${formatNumber(index)}-${String.fromCharCode(97 + fileIndex)}.js`,
+        ),
     );
-    graph.set(first, new Set([second]));
-    graph.set(second, new Set([first]));
-    cycles.push([first, second]);
+
+    files.forEach((file, fileIndex) => {
+      graph.set(file, new Set([files[(fileIndex + 1) % files.length]]));
+    });
+    cycles.push(files);
   }
 
   for (

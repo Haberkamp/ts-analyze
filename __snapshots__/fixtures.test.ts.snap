@@ -27,7 +27,8 @@ exports[`fixtures > matches the migration report snapshot for cycle 1`] = `
 
 Circular Dependencies:
 
-1. src/a.js, src/b.js"
+1. src/a.js
+   - src/b.js"
 `;
 
 exports[`fixtures > matches the migration report snapshot for dynamic 1`] = `
