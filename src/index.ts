@@ -8,6 +8,7 @@ import { loadTsConfig } from "./config.js";
 import { buildDependencyGraph } from "./graph.js";
 import { determineMigrationOrder } from "./order.js";
 import { formatMigrationReport, formatWhyReport } from "./report.js";
+import type { ReportLimit } from "./report.js";
 
 interface CliArgs {
   readonly _: Array<string | number | boolean>;
@@ -15,6 +16,7 @@ interface CliArgs {
   readonly config?: string;
   readonly tsconfig?: string;
   readonly help?: boolean;
+  readonly "report-limit"?: string | number | boolean;
 }
 
 export function runCli(argv = process.argv.slice(2), cwd = process.cwd()): string {
@@ -24,7 +26,7 @@ export function runCli(argv = process.argv.slice(2), cwd = process.cwd()): strin
       h: "help",
     },
     array: ["entry"],
-    boolean: ["help"],
+    boolean: ["help", "no-report-limit"],
     string: ["config", "tsconfig"],
   }) as CliArgs;
 
@@ -46,12 +48,14 @@ export function runCli(argv = process.argv.slice(2), cwd = process.cwd()): strin
   const projectConfig = loadTsConfig(cwd, args.tsconfig ?? args.config);
   const graphResult = buildDependencyGraph(entryPoints, projectConfig, cwd);
   const plan = determineMigrationOrder(graphResult.graph);
+  const reportLimit = parseReportLimit(args);
 
   return formatMigrationReport({
     plan,
     graph: graphResult.graph,
     manualReview: graphResult.manualReview,
     basePath: projectConfig.basePath,
+    reportLimit,
   });
 }
 
@@ -88,12 +92,31 @@ Options:
   --entry <file>        Entry point. May be passed multiple times.
   --config, -c <file>   Path to tsconfig.json. Defaults to nearest tsconfig.
   --tsconfig <file>     Alias for --config.
+  --report-limit <n>    Limit reports shown per section. Defaults to 10.
+  --no-report-limit     Disable per-section report limits.
   --help, -h            Show this help message.
 
 Examples:
   ts-analyze src/index.js
   ts-analyze --config tsconfig.json --entry src/index.js --entry src/admin.js
   ts-analyze --config tsconfig.json why src/greeting.ts`;
+}
+
+function parseReportLimit(args: CliArgs): ReportLimit | undefined {
+  const value = args["report-limit"];
+  if (value === undefined) {
+    return undefined;
+  }
+
+  if (value === false) {
+    return false;
+  }
+
+  if (typeof value !== "number" || !Number.isInteger(value) || value < 0) {
+    throw new Error("--report-limit must be a non-negative number.");
+  }
+
+  return value;
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

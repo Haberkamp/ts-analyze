@@ -3,11 +3,14 @@ import path from "node:path";
 import type { MigrationPlan } from "./order.js";
 import type { DependencyGraph, ManualReviewItem } from "./types.js";
 
+export type ReportLimit = number | false;
+
 export interface ReportInput {
   readonly plan: MigrationPlan;
   readonly graph: DependencyGraph;
   readonly manualReview: ManualReviewItem[];
   readonly basePath: string;
+  readonly reportLimit?: ReportLimit;
 }
 
 export interface WhyReportInput {
@@ -16,8 +19,11 @@ export interface WhyReportInput {
   readonly basePath: string;
 }
 
+const DEFAULT_REPORT_LIMIT = 10;
+
 export function formatMigrationReport(input: ReportInput): string {
   const lines: string[] = ["Migration Order:"];
+  const reportLimit = input.reportLimit ?? DEFAULT_REPORT_LIMIT;
   const migrationSteps = input.plan.steps
     .map((step) => {
       const files = step.files.filter((file) => !isTypeScriptFile(file));
@@ -28,13 +34,15 @@ export function formatMigrationReport(input: ReportInput): string {
     })
     .filter((step) => step.files.length > 0);
 
-  migrationSteps.forEach((step, index) => {
+  const visibleMigrationSteps = limitReports(migrationSteps, reportLimit);
+  visibleMigrationSteps.items.forEach((step, index) => {
     lines.push(
       `${index + 1}. ${formatFiles(step.files, input.basePath)}${
         step.isCycle ? " (cycle group, migrate together)" : ""
       }`,
     );
   });
+  pushLimitInfo(lines, visibleMigrationSteps, reportLimit);
 
   if (migrationSteps.length === 0) {
     lines.push("(no files found)");
@@ -46,9 +54,11 @@ export function formatMigrationReport(input: ReportInput): string {
 
   if (cycles.length > 0) {
     lines.push("", "Circular Dependencies:");
-    cycles.forEach((cycle, index) => {
+    const visibleCycles = limitReports(cycles, reportLimit);
+    visibleCycles.items.forEach((cycle, index) => {
       lines.push(`${index + 1}. ${formatFiles(cycle, input.basePath)}`);
     });
+    pushLimitInfo(lines, visibleCycles, reportLimit);
   }
 
   const typeScriptFilesWithJsDependencies = findTypeScriptFilesWithJsDependencies(
@@ -56,9 +66,18 @@ export function formatMigrationReport(input: ReportInput): string {
   );
   if (typeScriptFilesWithJsDependencies.length > 0) {
     lines.push("", "Warning: TypeScript Files With JavaScript Dependencies:");
-    typeScriptFilesWithJsDependencies.forEach((item, index) => {
+    const visibleTypeScriptFilesWithJsDependencies = limitReports(
+      typeScriptFilesWithJsDependencies,
+      reportLimit,
+    );
+    visibleTypeScriptFilesWithJsDependencies.items.forEach((item, index) => {
       lines.push(`${index + 1}. ${relativePath(item.file, input.basePath)}`);
     });
+    pushLimitInfo(
+      lines,
+      visibleTypeScriptFilesWithJsDependencies,
+      reportLimit,
+    );
     lines.push(
       "Info: Run `ts-analyze why <file>` to explain why a listed TypeScript file is non-leaf.",
     );
@@ -66,13 +85,15 @@ export function formatMigrationReport(input: ReportInput): string {
 
   if (input.manualReview.length > 0) {
     lines.push("", "Manual Review:");
-    input.manualReview.forEach((item, index) => {
+    const visibleManualReview = limitReports(input.manualReview, reportLimit);
+    visibleManualReview.items.forEach((item, index) => {
       lines.push(
         `${index + 1}. ${relativePath(item.file, input.basePath)} - ${
           item.reason
         }: ${item.detail}`,
       );
     });
+    pushLimitInfo(lines, visibleManualReview, reportLimit);
   }
 
   return lines.join("\n");
@@ -110,6 +131,31 @@ export function formatWhyReport(input: WhyReportInput): string {
 
 function formatFiles(files: string[], basePath: string): string {
   return files.map((file) => relativePath(file, basePath)).join(", ");
+}
+
+function limitReports<T>(
+  reports: T[],
+  reportLimit: ReportLimit,
+): { items: T[]; total: number } {
+  if (reportLimit === false || reports.length <= reportLimit) {
+    return { items: reports, total: reports.length };
+  }
+
+  return { items: reports.slice(0, reportLimit), total: reports.length };
+}
+
+function pushLimitInfo<T>(
+  lines: string[],
+  result: { items: T[]; total: number },
+  reportLimit: ReportLimit,
+): void {
+  if (reportLimit === false || result.total <= reportLimit) {
+    return;
+  }
+
+  lines.push(
+    `Info: Showing ${reportLimit} of ${result.total} reports. Configure with \`--report-limit <number>\` or disable with \`--no-report-limit\`.`,
+  );
 }
 
 function relativePath(file: string, basePath: string): string {
