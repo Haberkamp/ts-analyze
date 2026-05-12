@@ -46,6 +46,7 @@ async function main(): Promise<void> {
   console.log(
     formatMigrationReport({
       plan,
+      graph: graphResult.graph,
       manualReview: graphResult.manualReview,
       basePath: projectConfig.basePath,
     }),

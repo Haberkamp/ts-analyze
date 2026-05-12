@@ -23,7 +23,13 @@ export function buildDependencyGraph(
   const visited = new Set<string>();
 
   for (const entryPoint of entryPoints) {
-    visitFile(resolveEntryPoint(entryPoint, cwd, projectConfig.basePath));
+    for (const resolvedEntryPoint of resolveEntryPoint(
+      entryPoint,
+      cwd,
+      projectConfig.basePath,
+    )) {
+      visitFile(resolvedEntryPoint);
+    }
   }
 
   return { graph, manualReview };
@@ -70,7 +76,7 @@ function resolveEntryPoint(
   entryPoint: string,
   cwd: string,
   basePath: string,
-): string {
+): string[] {
   const cwdPath = path.resolve(cwd, entryPoint);
   const cwdMatch = resolveFileLikePath(cwdPath);
   if (cwdMatch) {
@@ -86,24 +92,50 @@ function resolveEntryPoint(
   throw new Error(`Entry point not found: ${entryPoint}`);
 }
 
-function resolveFileLikePath(absolutePath: string): string | undefined {
-  if (fs.existsSync(absolutePath) && fs.statSync(absolutePath).isFile()) {
-    return path.normalize(absolutePath);
-  }
-
-  for (const extension of ENTRY_EXTENSIONS) {
-    const candidate = `${absolutePath}${extension}`;
-    if (fs.existsSync(candidate) && fs.statSync(candidate).isFile()) {
-      return path.normalize(candidate);
-    }
-  }
-
-  if (fs.existsSync(absolutePath) && fs.statSync(absolutePath).isDirectory()) {
+function resolveFileLikePath(absolutePath: string): string[] | undefined {
+  if (!fs.existsSync(absolutePath)) {
     for (const extension of ENTRY_EXTENSIONS) {
-      const candidate = path.join(absolutePath, `index${extension}`);
+      const candidate = `${absolutePath}${extension}`;
       if (fs.existsSync(candidate) && fs.statSync(candidate).isFile()) {
-        return path.normalize(candidate);
+        return [path.normalize(candidate)];
       }
     }
+
+    return undefined;
   }
+
+  const stat = fs.statSync(absolutePath);
+  if (stat.isFile()) {
+    return isEntryFile(absolutePath) ? [path.normalize(absolutePath)] : undefined;
+  }
+
+  if (stat.isDirectory()) {
+    return collectEntryFiles(absolutePath);
+  }
+}
+
+function collectEntryFiles(directoryPath: string): string[] {
+  const entries = fs
+    .readdirSync(directoryPath, { withFileTypes: true })
+    .sort((left, right) => left.name.localeCompare(right.name));
+  const files: string[] = [];
+
+  for (const entry of entries) {
+    const absolutePath = path.join(directoryPath, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...collectEntryFiles(absolutePath));
+    } else if (entry.isFile() && isEntryFile(absolutePath)) {
+      files.push(path.normalize(absolutePath));
+    }
+  }
+
+  return files;
+}
+
+function isEntryFile(filePath: string): boolean {
+  if (filePath.endsWith(".d.ts")) {
+    return false;
+  }
+
+  return ENTRY_EXTENSIONS.includes(path.extname(filePath));
 }

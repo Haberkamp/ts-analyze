@@ -21,7 +21,11 @@ export function determineMigrationOrder(graph: DependencyGraph): MigrationPlan {
   });
 
   const componentDependencies = new Map<number, Set<number>>();
-  components.forEach((_, index) => componentDependencies.set(index, new Set()));
+  const componentDependents = new Map<number, Set<number>>();
+  components.forEach((_, index) => {
+    componentDependencies.set(index, new Set());
+    componentDependents.set(index, new Set());
+  });
 
   for (const [file, dependencies] of graph) {
     const fileComponent = componentByFile.get(file);
@@ -36,11 +40,21 @@ export function determineMigrationOrder(graph: DependencyGraph): MigrationPlan {
         dependencyComponent !== fileComponent
       ) {
         componentDependencies.get(fileComponent)?.add(dependencyComponent);
+        componentDependents.get(dependencyComponent)?.add(fileComponent);
       }
     }
   }
 
-  const orderedComponentIndexes = topologicalSort(componentDependencies);
+  const orderedComponentIndexes = [...componentDependencies.keys()].sort(
+    (left, right) =>
+      compareComponents(
+        left,
+        right,
+        components,
+        componentDependencies,
+        componentDependents,
+      ),
+  );
   const steps = orderedComponentIndexes.map((index) => {
     const files = [...components[index]].sort();
     return {
@@ -120,27 +134,30 @@ function findStronglyConnectedComponents(graph: DependencyGraph): string[][] {
   }
 }
 
-function topologicalSort(graph: Map<number, Set<number>>): number[] {
-  const visited = new Set<number>();
-  const ordered: number[] = [];
-
-  for (const node of graph.keys()) {
-    visit(node);
+function compareComponents(
+  left: number,
+  right: number,
+  components: string[][],
+  dependencies: Map<number, Set<number>>,
+  dependents: Map<number, Set<number>>,
+): number {
+  const dependencyCount =
+    (dependencies.get(left)?.size ?? 0) - (dependencies.get(right)?.size ?? 0);
+  if (dependencyCount !== 0) {
+    return dependencyCount;
   }
 
-  return ordered;
-
-  function visit(node: number): void {
-    if (visited.has(node)) {
-      return;
-    }
-
-    visited.add(node);
-
-    for (const dependency of graph.get(node) ?? []) {
-      visit(dependency);
-    }
-
-    ordered.push(node);
+  const dependentCount =
+    (dependents.get(right)?.size ?? 0) - (dependents.get(left)?.size ?? 0);
+  if (dependentCount !== 0) {
+    return dependentCount;
   }
+
+  return componentName(components[left]).localeCompare(
+    componentName(components[right]),
+  );
+}
+
+function componentName(files: string[]): string {
+  return [...files].sort().join("\0");
 }

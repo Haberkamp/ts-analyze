@@ -3,8 +3,8 @@
 exports[`fixtures > matches the migration report snapshot for basic-esm 1`] = `
 "Migration Order:
 1. src/utils/date.js
-2. src/components/Button.js
-3. src/utils/math.js
+2. src/utils/math.js
+3. src/components/Button.js
 4. src/services/api.js
 5. src/index.js"
 `;
@@ -34,6 +34,24 @@ Manual Review:
 1. src/index.js - non-literal dynamic import: import(\`./\${name}.js\`)"
 `;
 
+exports[`fixtures > matches the migration report snapshot for multiple-entrypoints 1`] = `
+"Migration Order:
+1. src/components/Layout.js
+2. src/components/Button.js
+3. src/pages/about.js
+4. src/pages/home.js"
+`;
+
+exports[`fixtures > matches the migration report snapshot for multiple-entrypoints-nested 1`] = `
+"Migration Order:
+1. src/components/Layout.js
+2. src/components/Button.js
+3. src/components/Card.js
+4. src/pages/admin/settings.js
+5. src/pages/blog/post.js
+6. src/pages/home.js"
+`;
+
 exports[`fixtures > matches the migration report snapshot for path-alias 1`] = `
 "Migration Order:
 1. src/utils/math.js
@@ -42,35 +60,31 @@ exports[`fixtures > matches the migration report snapshot for path-alias 1`] = `
 
 exports[`fixtures > matches the migration report snapshot for re-exports 1`] = `
 "Migration Order:
-1. src/number.js
-2. src/feature.js
-3. src/label.js
-4. src/barrel.js
-5. src/index.js"
+1. src/label.js
+2. src/number.js
+3. src/feature.js
+4. src/index.js
+5. src/barrel.js"
 `;
 
 exports[`fixtures > matches the migration report snapshot for typescript-leaves 1`] = `
 "Migration Order:
-1. src/utils/count.ts
-2. src/utils/title.ts
-3. src/summary.js
-4. src/index.js"
+1. src/index.js
+2. src/summary.js"
 `;
 
 exports[`fixtures > matches the migration report snapshot for typescript-middle-js-leaf 1`] = `
 "Migration Order:
 1. src/punctuation.js
-2. src/greeting.ts
-3. src/index.js"
+2. src/index.js
+
+Warning: TypeScript Files With JavaScript Dependencies:
+1. src/greeting.ts -> src/punctuation.js"
 `;
 
 exports[`fixtures > matches the migration report snapshot for typescript-only 1`] = `
 "Migration Order:
-1. src/types.ts
-2. src/format.ts
-3. src/report.ts
-4. src/user.ts
-5. src/index.ts"
+(no files found)"
 `;
 
 exports[`fixtures > matches the migration report snapshot for unresolved 1`] = `
