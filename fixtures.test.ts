@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 import { afterEach, describe, expect, it } from "vitest";
 
@@ -148,18 +148,107 @@ describe("TypeScript files with JavaScript dependencies", () => {
 });
 
 describe("report styling", () => {
+  it("links migration report file paths without changing visible text", () => {
+    const report = formatMigrationReport(
+      makeReportInput({
+        stepCount: 1,
+        cycleCount: 1,
+        cycleFileCount: 2,
+        typeScriptWarningCount: 1,
+        manualReviewCount: 1,
+      }),
+    );
+
+    expect(report).toContain(
+      `${ansi.gray}1.${ansi.reset} ${ansi.white}${hyperlink(
+        "src/file-01.js",
+        fileUrl("src/file-01.js"),
+      )}${ansi.reset}`,
+    );
+    expect(report).toContain(
+      `${ansi.gray}1.${ansi.reset} ${ansi.white}${hyperlink(
+        "src/cycle-01-a.js",
+        fileUrl("src/cycle-01-a.js"),
+      )}${ansi.reset}`,
+    );
+    expect(report).toContain(
+      `${ansi.gray}   -${ansi.reset} ${ansi.white}${hyperlink(
+        "src/cycle-01-b.js",
+        fileUrl("src/cycle-01-b.js"),
+      )}${ansi.reset}`,
+    );
+    expect(report).toContain(
+      `${ansi.gray}1.${ansi.reset} ${ansi.white}${hyperlink(
+        "src/ts-warning-01.ts",
+        fileUrl("src/ts-warning-01.ts"),
+      )}${ansi.reset}`,
+    );
+    expect(report).toContain(
+      `${ansi.gray}1.${ansi.reset} ${ansi.white}${hyperlink(
+        "src/manual-01.js",
+        fileUrl("src/manual-01.js"),
+      )} - dynamic import: import(expr)${ansi.reset}`,
+    );
+    expect(stripAnsi(report)).toContain("1. src/file-01.js");
+  });
+
+  it("links why report file paths without changing visible text", () => {
+    const basePath = path.join(repoRoot, "virtual");
+    const file = path.join(basePath, "src", "ts-warning-01.ts");
+    const dependency = path.join(basePath, "src", "ts-warning-01.js");
+    const graph = new Map([[file, new Set([dependency])]]);
+
+    const report = formatWhyReport({ file, graph, basePath });
+
+    expect(report).toContain(
+      `${ansi.gray}1.${ansi.reset} ${ansi.white}${hyperlink(
+        "src/ts-warning-01.ts",
+        pathToFileURL(file).href,
+      )} imports ${hyperlink(
+        "src/ts-warning-01.js",
+        pathToFileURL(dependency).href,
+      )}${ansi.reset}`,
+    );
+    expect(report).toContain(
+      `${ansi.gray}2.${ansi.reset} ${ansi.white}${hyperlink(
+        "src/ts-warning-01.js",
+        pathToFileURL(dependency).href,
+      )} is JavaScript, so ${hyperlink(
+        "src/ts-warning-01.ts",
+        pathToFileURL(file).href,
+      )} is not a TypeScript leaf.${ansi.reset}`,
+    );
+    expect(stripAnsi(report)).toBe(
+      [
+        "Why src/ts-warning-01.ts is listed:",
+        "",
+        "1. src/ts-warning-01.ts imports src/ts-warning-01.js",
+        "2. src/ts-warning-01.js is JavaScript, so src/ts-warning-01.ts is not a TypeScript leaf.",
+      ].join("\n"),
+    );
+  });
+
   it("aligns list item content without zero-padding numbers", () => {
     const report = formatMigrationReport(makeReportInput({ stepCount: 10 }));
     const lines = report.split("\n");
 
     expect(lines).toContain(
-      `${ansi.gray} 1.${ansi.reset} ${ansi.white}src/file-01.js${ansi.reset}`,
+      `${ansi.gray} 1.${ansi.reset} ${ansi.white}${hyperlink(
+        "src/file-01.js",
+        fileUrl("src/file-01.js"),
+      )}${ansi.reset}`,
     );
     expect(lines).toContain(
-      `${ansi.gray} 2.${ansi.reset} ${ansi.white}src/file-02.js${ansi.reset}`,
+      `${ansi.gray} 2.${ansi.reset} ${ansi.white}${hyperlink(
+        "src/file-02.js",
+        fileUrl("src/file-02.js"),
+      )}${ansi.reset}`,
     );
     expect(lines).toContain(
-      `${ansi.gray}10.${ansi.reset} ${ansi.white}src/file-10.js${ansi.reset}`,
+      `${ansi.gray}10.${ansi.reset} ${ansi.white}${hyperlink(
+        "src/file-10.js",
+        fileUrl("src/file-10.js"),
+      )}${ansi.reset}`,
     );
     expect(report).not.toContain(`${ansi.gray}01.${ansi.reset}`);
   });
@@ -196,16 +285,28 @@ describe("report styling", () => {
       [
         `${ansi.bold}Migration Order:${ansi.reset}`,
         "",
-        `${ansi.gray}1.${ansi.reset} ${ansi.white}src/file-01.js${ansi.reset}`,
-        `${ansi.gray}2.${ansi.reset} ${ansi.white}src/file-02.js${ansi.reset}`,
+        `${ansi.gray}1.${ansi.reset} ${ansi.white}${hyperlink(
+          "src/file-01.js",
+          fileUrl("src/file-01.js"),
+        )}${ansi.reset}`,
+        `${ansi.gray}2.${ansi.reset} ${ansi.white}${hyperlink(
+          "src/file-02.js",
+          fileUrl("src/file-02.js"),
+        )}${ansi.reset}`,
         `${ansi.gray}${ansi.reset}`,
         `${ansi.gray}  ${ansi.bold}[Info]:${ansi.reset}${ansi.gray} Showing 2 of 3 reports. Configure with \`--report-limit <number>\` or disable with \`--no-report-limit\`.  ${ansi.reset}`,
         "",
         "",
         `${ansi.bold}Circular Dependencies:${ansi.reset}`,
         "",
-        `${ansi.gray}1.${ansi.reset} ${ansi.white}src/cycle-01-a.js${ansi.reset}`,
-        `${ansi.gray}   -${ansi.reset} ${ansi.white}src/cycle-01-b.js${ansi.reset}`,
+        `${ansi.gray}1.${ansi.reset} ${ansi.white}${hyperlink(
+          "src/cycle-01-a.js",
+          fileUrl("src/cycle-01-a.js"),
+        )}${ansi.reset}`,
+        `${ansi.gray}   -${ansi.reset} ${ansi.white}${hyperlink(
+          "src/cycle-01-b.js",
+          fileUrl("src/cycle-01-b.js"),
+        )}${ansi.reset}`,
       ].join("\n"),
     );
   });
@@ -461,6 +562,8 @@ function countOccurrences(value: string, search: string): number {
 
 function stripAnsi(value: string): string {
   return value
+    .replace(/\u001b]8;;[^\u0007]*\u0007/g, "")
+    .replace(/\u001b]8;;\u0007/g, "")
     .replace(/\u001b\[[0-9;]*m/g, "")
     .split("\n")
     .map((line) => (line.trim() === "" ? "" : line.trimEnd()))
@@ -469,4 +572,12 @@ function stripAnsi(value: string): string {
 
 function formatNumber(value: number): string {
   return value.toString().padStart(2, "0");
+}
+
+function hyperlink(text: string, url: string): string {
+  return `\u001b]8;;${url}\u0007${text}\u001b]8;;\u0007`;
+}
+
+function fileUrl(relativeFilePath: string): string {
+  return pathToFileURL(path.join(repoRoot, "virtual", relativeFilePath)).href;
 }

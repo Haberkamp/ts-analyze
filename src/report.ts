@@ -1,4 +1,5 @@
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 
 import type { MigrationPlan } from "./order.js";
 import type { DependencyGraph, ManualReviewItem } from "./types.js";
@@ -78,13 +79,13 @@ export function formatMigrationReport(input: ReportInput): string {
       lines.push(
         formatListItem(
           index + 1,
-          relativePath(firstFile, input.basePath),
+          formatFile(firstFile, input.basePath),
           cycleMarkerWidth,
         ),
       );
       remainingFiles.forEach((file) => {
         lines.push(
-          formatNestedListItem(relativePath(file, input.basePath), cycleMarkerWidth),
+          formatNestedListItem(formatFile(file, input.basePath), cycleMarkerWidth),
         );
       });
     });
@@ -110,7 +111,7 @@ export function formatMigrationReport(input: ReportInput): string {
       lines.push(
         formatListItem(
           index + 1,
-          relativePath(item.file, input.basePath),
+          formatFile(item.file, input.basePath),
           typeScriptWarningMarkerWidth,
         ),
       );
@@ -132,7 +133,7 @@ export function formatMigrationReport(input: ReportInput): string {
     const visibleManualReview = limitReports(input.manualReview, reportLimit);
     const manualReviewMarkerWidth = markerWidth(visibleManualReview.items.length);
     visibleManualReview.items.forEach((item, index) => {
-      const file = relativePath(item.file, input.basePath);
+      const file = formatFile(item.file, input.basePath);
       lines.push(
         formatListItem(
           index + 1,
@@ -149,7 +150,7 @@ export function formatMigrationReport(input: ReportInput): string {
 
 export function formatWhyReport(input: WhyReportInput): string {
   const file = path.normalize(input.file);
-  const formattedFile = relativePath(file, input.basePath);
+  const formattedFile = formatFile(file, input.basePath);
 
   if (!isTypeScriptFile(file)) {
     return `${formattedFile} is not a TypeScript file.`;
@@ -169,7 +170,7 @@ export function formatWhyReport(input: WhyReportInput): string {
   pushHeader(lines, `Why ${formattedFile} is listed:`);
   const whyMarkerWidth = markerWidth(jsDependencies.length * 2);
   jsDependencies.forEach((dependency, index) => {
-    const formattedDependency = relativePath(dependency, input.basePath);
+    const formattedDependency = formatFile(dependency, input.basePath);
     lines.push(
       formatListItem(
         index * 2 + 1,
@@ -242,7 +243,21 @@ function markerWidth(itemCount: number): number {
 }
 
 function formatFiles(files: string[], basePath: string): string {
-  return files.map((file) => relativePath(file, basePath)).join(", ");
+  return files.map((file) => formatFile(file, basePath)).join(", ");
+}
+
+function formatFile(file: string, basePath: string): string {
+  return hyperlink(relativePath(file, basePath), fileUrl(file, basePath));
+}
+
+function hyperlink(text: string, url: string): string {
+  return `\u001b]8;;${url}\u0007${text}\u001b]8;;\u0007`;
+}
+
+function fileUrl(file: string, basePath: string): string {
+  const absoluteFile = path.isAbsolute(file) ? file : path.resolve(basePath, file);
+
+  return pathToFileURL(absoluteFile).href;
 }
 
 function limitReports<T>(
