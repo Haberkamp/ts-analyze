@@ -29,6 +29,7 @@ const ansi = {
   reset: "\u001b[0m",
   white: "\u001b[97m",
 };
+const contentIndent = " ";
 
 export function formatMigrationReport(input: ReportInput): string {
   const lines: string[] = [];
@@ -59,7 +60,7 @@ export function formatMigrationReport(input: ReportInput): string {
   pushLimitInfo(lines, visibleMigrationSteps, reportLimit);
 
   if (migrationSteps.length === 0) {
-    lines.push(formatContent("(no files found)"));
+    lines.push(indentContent(formatContent("(no files found)")));
   }
 
   const cycles = input.plan.cycles
@@ -145,6 +146,8 @@ export function formatMigrationReport(input: ReportInput): string {
     pushLimitInfo(lines, visibleManualReview, reportLimit);
   }
 
+  pushBlankLineAfterFinalAlert(lines);
+
   return lines.join("\n");
 }
 
@@ -153,17 +156,17 @@ export function formatWhyReport(input: WhyReportInput): string {
   const formattedFile = formatFile(file, input.basePath);
 
   if (!isTypeScriptFile(file)) {
-    return `${formattedFile} is not a TypeScript file.`;
+    return indentContent(`${formattedFile} is not a TypeScript file.`);
   }
 
   const dependencies = input.graph.get(file);
   if (!dependencies) {
-    return `No dependency information found for ${formattedFile}.`;
+    return indentContent(`No dependency information found for ${formattedFile}.`);
   }
 
   const jsDependencies = [...dependencies].filter(isJavaScriptFile).sort();
   if (jsDependencies.length === 0) {
-    return `No JavaScript dependencies found for ${formattedFile}.`;
+    return indentContent(`No JavaScript dependencies found for ${formattedFile}.`);
   }
 
   const lines: string[] = [];
@@ -193,9 +196,11 @@ export function formatWhyReport(input: WhyReportInput): string {
 function pushHeader(lines: string[], title: string): void {
   if (lines.length > 0) {
     lines.push("", "");
+  } else {
+    lines.push("");
   }
 
-  lines.push(`${ansi.bold}${title}${ansi.reset}`, "");
+  lines.push(indentContent(`${ansi.bold}${title}${ansi.reset}`), "");
 }
 
 function pushWarningHeader(lines: string[], title: string): void {
@@ -206,9 +211,9 @@ function pushWarningHeader(lines: string[], title: string): void {
   const heading = `  [Warning]: ${title}  `;
   const padding = " ".repeat(heading.length);
   lines.push(
-    `${ansi.bgYellow}${padding}${ansi.reset}`,
-    `${ansi.bgYellow}${ansi.blue}${ansi.bold}${heading}${ansi.reset}`,
-    `${ansi.bgYellow}${padding}${ansi.reset}`,
+    indentContent(`${ansi.bgYellow}${padding}${ansi.reset}`),
+    indentContent(`${ansi.bgYellow}${ansi.blue}${ansi.bold}${heading}${ansi.reset}`),
+    indentContent(`${ansi.bgYellow}${padding}${ansi.reset}`),
     "",
   );
 }
@@ -216,13 +221,17 @@ function pushWarningHeader(lines: string[], title: string): void {
 function formatListItem(index: number, content: string, width: number): string {
   const marker = `${index.toString().padStart(width, " ")}.`;
 
-  return `${ansi.gray}${marker}${ansi.reset} ${formatContent(content)}`;
+  return indentContent(
+    `${ansi.gray}${marker}${ansi.reset} ${formatContent(content)}`,
+  );
 }
 
 function formatNestedListItem(content: string, parentWidth: number): string {
   const indent = " ".repeat(parentWidth + 2);
 
-  return `${ansi.gray}${indent}-${ansi.reset} ${formatContent(content)}`;
+  return indentContent(
+    `${ansi.gray}${indent}-${ansi.reset} ${formatContent(content)}`,
+  );
 }
 
 function formatContent(content: string): string {
@@ -234,8 +243,19 @@ function formatInfoBanner(message: string): string {
 
   return [
     `${ansi.gray}${ansi.reset}`,
-    `${ansi.gray}  ${label}${ansi.gray} ${message}  ${ansi.reset}`,
+    indentContent(`${ansi.gray}  ${label}${ansi.gray} ${message}  ${ansi.reset}`),
   ].join("\n");
+}
+
+function indentContent(content: string): string {
+  return `${contentIndent}${content}`;
+}
+
+function pushBlankLineAfterFinalAlert(lines: string[]): void {
+  const lastLine = lines.at(-1);
+  if (lastLine?.includes(`${ansi.bold}[Info]:`) ?? false) {
+    lines.push("");
+  }
 }
 
 function markerWidth(itemCount: number): number {

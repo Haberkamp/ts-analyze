@@ -81,12 +81,12 @@ describe("TypeScript files with JavaScript dependencies", () => {
       ),
     ).toContain(
       [
-        "  [Warning]: TypeScript Files With JavaScript Dependencies:",
+        "   [Warning]: TypeScript Files With JavaScript Dependencies:",
         "",
         "",
-        "1. src/greeting.ts",
+        " 1. src/greeting.ts",
         "",
-        "  [Info]: Run `ts-analyze why <file>` to explain why a listed TypeScript file is non-leaf.",
+        "   [Info]: Run `ts-analyze why <file>` to explain why a listed TypeScript file is non-leaf.",
       ].join("\n"),
     );
     expect(
@@ -115,10 +115,11 @@ describe("TypeScript files with JavaScript dependencies", () => {
       ),
     ).toBe(
       [
-        "Why src/greeting.ts is listed:",
         "",
-        "1. src/greeting.ts imports src/punctuation.js",
-        "2. src/punctuation.js is JavaScript, so src/greeting.ts is not a TypeScript leaf.",
+        " Why src/greeting.ts is listed:",
+        "",
+        " 1. src/greeting.ts imports src/punctuation.js",
+        " 2. src/punctuation.js is JavaScript, so src/greeting.ts is not a TypeScript leaf.",
       ].join("\n"),
     );
   });
@@ -138,16 +139,39 @@ describe("TypeScript files with JavaScript dependencies", () => {
       ),
     ).toBe(
       [
-        "Why src/greeting.ts is listed:",
         "",
-        "1. src/greeting.ts imports src/punctuation.js",
-        "2. src/punctuation.js is JavaScript, so src/greeting.ts is not a TypeScript leaf.",
+        " Why src/greeting.ts is listed:",
+        "",
+        " 1. src/greeting.ts imports src/punctuation.js",
+        " 2. src/punctuation.js is JavaScript, so src/greeting.ts is not a TypeScript leaf.",
       ].join("\n"),
     );
   });
 });
 
 describe("report styling", () => {
+  it("indents report content by one column", () => {
+    const report = stripAnsi(
+      formatMigrationReport(
+        makeReportInput({
+          stepCount: 1,
+          typeScriptWarningCount: 1,
+        }),
+      ),
+    );
+
+    expect(report.split("\n")[0]).toBe("");
+    expect(report.split("\n")[1]).toBe(" Migration Order:");
+    expect(report).toContain(" 1. src/file-01.js");
+    expect(report).toContain(
+      "   [Warning]: TypeScript Files With JavaScript Dependencies:",
+    );
+    expect(report).toContain(" 1. src/ts-warning-01.ts");
+    expect(report).toContain(
+      "   [Info]: Run `ts-analyze why <file>` to explain why a listed TypeScript file is non-leaf.",
+    );
+  });
+
   it("links migration report file paths without changing visible text", () => {
     const report = formatMigrationReport(
       makeReportInput({
@@ -220,10 +244,11 @@ describe("report styling", () => {
     );
     expect(stripAnsi(report)).toBe(
       [
-        "Why src/ts-warning-01.ts is listed:",
         "",
-        "1. src/ts-warning-01.ts imports src/ts-warning-01.js",
-        "2. src/ts-warning-01.js is JavaScript, so src/ts-warning-01.ts is not a TypeScript leaf.",
+        " Why src/ts-warning-01.ts is listed:",
+        "",
+        " 1. src/ts-warning-01.ts imports src/ts-warning-01.js",
+        " 2. src/ts-warning-01.js is JavaScript, so src/ts-warning-01.ts is not a TypeScript leaf.",
       ].join("\n"),
     );
   });
@@ -233,19 +258,19 @@ describe("report styling", () => {
     const lines = report.split("\n");
 
     expect(lines).toContain(
-      `${ansi.gray} 1.${ansi.reset} ${ansi.white}${hyperlink(
+      ` ${ansi.gray} 1.${ansi.reset} ${ansi.white}${hyperlink(
         "src/file-01.js",
         fileUrl("src/file-01.js"),
       )}${ansi.reset}`,
     );
     expect(lines).toContain(
-      `${ansi.gray} 2.${ansi.reset} ${ansi.white}${hyperlink(
+      ` ${ansi.gray} 2.${ansi.reset} ${ansi.white}${hyperlink(
         "src/file-02.js",
         fileUrl("src/file-02.js"),
       )}${ansi.reset}`,
     );
     expect(lines).toContain(
-      `${ansi.gray}10.${ansi.reset} ${ansi.white}${hyperlink(
+      ` ${ansi.gray}10.${ansi.reset} ${ansi.white}${hyperlink(
         "src/file-10.js",
         fileUrl("src/file-10.js"),
       )}${ansi.reset}`,
@@ -262,9 +287,9 @@ describe("report styling", () => {
       [
         "Circular Dependencies:",
         "",
-        "1. src/cycle-01-a.js",
-        "   - src/cycle-01-b.js",
-        "   - src/cycle-01-c.js",
+        " 1. src/cycle-01-a.js",
+        "    - src/cycle-01-b.js",
+        "    - src/cycle-01-c.js",
       ].join("\n"),
     );
     expect(report).not.toContain(
@@ -283,27 +308,28 @@ describe("report styling", () => {
 
     expect(report).toBe(
       [
-        `${ansi.bold}Migration Order:${ansi.reset}`,
         "",
-        `${ansi.gray}1.${ansi.reset} ${ansi.white}${hyperlink(
+        ` ${ansi.bold}Migration Order:${ansi.reset}`,
+        "",
+        ` ${ansi.gray}1.${ansi.reset} ${ansi.white}${hyperlink(
           "src/file-01.js",
           fileUrl("src/file-01.js"),
         )}${ansi.reset}`,
-        `${ansi.gray}2.${ansi.reset} ${ansi.white}${hyperlink(
+        ` ${ansi.gray}2.${ansi.reset} ${ansi.white}${hyperlink(
           "src/file-02.js",
           fileUrl("src/file-02.js"),
         )}${ansi.reset}`,
         `${ansi.gray}${ansi.reset}`,
-        `${ansi.gray}  ${ansi.bold}[Info]:${ansi.reset}${ansi.gray} Showing 2 of 3 reports. Configure with \`--report-limit <number>\` or disable with \`--no-report-limit\`.  ${ansi.reset}`,
+        ` ${ansi.gray}  ${ansi.bold}[Info]:${ansi.reset}${ansi.gray} Showing 2 of 3 reports. Configure with \`--report-limit <number>\` or disable with \`--no-report-limit\`.  ${ansi.reset}`,
         "",
         "",
-        `${ansi.bold}Circular Dependencies:${ansi.reset}`,
+        ` ${ansi.bold}Circular Dependencies:${ansi.reset}`,
         "",
-        `${ansi.gray}1.${ansi.reset} ${ansi.white}${hyperlink(
+        ` ${ansi.gray}1.${ansi.reset} ${ansi.white}${hyperlink(
           "src/cycle-01-a.js",
           fileUrl("src/cycle-01-a.js"),
         )}${ansi.reset}`,
-        `${ansi.gray}   -${ansi.reset} ${ansi.white}${hyperlink(
+        ` ${ansi.gray}   -${ansi.reset} ${ansi.white}${hyperlink(
           "src/cycle-01-b.js",
           fileUrl("src/cycle-01-b.js"),
         )}${ansi.reset}`,
@@ -320,12 +346,12 @@ describe("report styling", () => {
       "  [Warning]: TypeScript Files With JavaScript Dependencies:  ";
     const padding = " ".repeat(headingText.length);
     const headingIndex = lines.indexOf(
-      `${ansi.bgYellow}${ansi.blue}${ansi.bold}${headingText}${ansi.reset}`,
+      ` ${ansi.bgYellow}${ansi.blue}${ansi.bold}${headingText}${ansi.reset}`,
     );
 
     expect(headingIndex).toBeGreaterThan(0);
-    expect(lines[headingIndex - 1]).toBe(`${ansi.bgYellow}${padding}${ansi.reset}`);
-    expect(lines[headingIndex + 1]).toBe(`${ansi.bgYellow}${padding}${ansi.reset}`);
+    expect(lines[headingIndex - 1]).toBe(` ${ansi.bgYellow}${padding}${ansi.reset}`);
+    expect(lines[headingIndex + 1]).toBe(` ${ansi.bgYellow}${padding}${ansi.reset}`);
     expect(lines[headingIndex + 2]).toBe("");
   });
 });
@@ -346,7 +372,7 @@ describe("report limits", () => {
     expect(report).toContain("10. src/file-10.js");
     expect(report).not.toContain("src/file-11.js");
     expect(report).toContain(
-      ["10. src/cycle-10-a.js", "    - src/cycle-10-b.js"].join("\n"),
+      [" 10. src/cycle-10-a.js", "     - src/cycle-10-b.js"].join("\n"),
     );
     expect(report).not.toContain("src/cycle-11-a.js");
     expect(report).toContain("10. src/ts-warning-10.ts");
@@ -399,12 +425,14 @@ describe("report limits", () => {
 
     expect(stripAnsi(runCli(["--report-limit", "2", "src"], fixtureRoot))).toBe(
       [
-        "Migration Order:",
         "",
-        "1. src/file-01.js",
-        "2. src/file-02.js",
+        " Migration Order:",
         "",
-        "  [Info]: Showing 2 of 12 reports. Configure with `--report-limit <number>` or disable with `--no-report-limit`.",
+        " 1. src/file-01.js",
+        " 2. src/file-02.js",
+        "",
+        "   [Info]: Showing 2 of 12 reports. Configure with `--report-limit <number>` or disable with `--no-report-limit`.",
+        "",
       ].join("\n"),
     );
   });
