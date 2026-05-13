@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+import { realpathSync } from "node:fs";
+import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { parse } from "@bomb.sh/args";
@@ -149,7 +151,30 @@ function parseReportLimit(args: CliArgs): ReportLimit | undefined {
   return value;
 }
 
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
+export function isCliEntryPoint(
+  entryPoint = process.argv[1],
+  moduleUrl = import.meta.url,
+): boolean {
+  if (!entryPoint) {
+    return false;
+  }
+
+  const modulePath = fileURLToPath(moduleUrl);
+
+  return normalizeEntrypointPath(entryPoint) === normalizeEntrypointPath(modulePath);
+}
+
+function normalizeEntrypointPath(filePath: string): string {
+  const resolvedPath = path.resolve(filePath);
+
+  try {
+    return realpathSync(resolvedPath);
+  } catch {
+    return resolvedPath;
+  }
+}
+
+if (isCliEntryPoint()) {
   main().catch((error: unknown) => {
     const message = error instanceof Error ? error.message : String(error);
     console.error(message);
