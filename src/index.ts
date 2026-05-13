@@ -7,7 +7,11 @@ import { parse } from "@bomb.sh/args";
 import { loadTsConfig } from "./config.js";
 import { buildDependencyGraph } from "./graph.js";
 import { determineMigrationOrder } from "./order.js";
-import { formatMigrationReport, formatWhyReport } from "./report.js";
+import {
+  findNonLeafTypeScriptFiles,
+  formatMigrationReport,
+  formatWhyReport,
+} from "./report.js";
 import type { ReportLimit } from "./report.js";
 
 interface CliArgs {
@@ -16,27 +20,43 @@ interface CliArgs {
   readonly config?: string;
   readonly tsconfig?: string;
   readonly help?: boolean;
+  readonly "dry-run"?: boolean;
   readonly "report-limit"?: string | number | boolean;
 }
 
+interface CliResult {
+  readonly output: string;
+  readonly exitCode: number;
+}
+
 export function runCli(argv = process.argv.slice(2), cwd = process.cwd()): string {
+  return runCliCommand(argv, cwd).output;
+}
+
+export function runCliCommand(
+  argv = process.argv.slice(2),
+  cwd = process.cwd(),
+): CliResult {
   const args = parse(argv, {
     alias: {
       c: "config",
       h: "help",
     },
     array: ["entry"],
-    boolean: ["help", "no-report-limit"],
+    boolean: ["dry-run", "help", "no-report-limit"],
     string: ["config", "tsconfig"],
   }) as CliArgs;
 
   if (args.help) {
-    return helpText();
+    return { output: helpText(), exitCode: 0 };
   }
 
   const positionalEntries = args._.map(String).filter(Boolean);
   if (positionalEntries[0] === "why") {
-    return runWhyCommand(positionalEntries.slice(1), args, cwd);
+    return {
+      output: runWhyCommand(positionalEntries.slice(1), args, cwd),
+      exitCode: 0,
+    };
   }
 
   const entryPoints = [...(args.entry ?? []), ...positionalEntries];
@@ -50,13 +70,20 @@ export function runCli(argv = process.argv.slice(2), cwd = process.cwd()): strin
   const plan = determineMigrationOrder(graphResult.graph);
   const reportLimit = parseReportLimit(args);
 
-  return formatMigrationReport({
+  const output = formatMigrationReport({
     plan,
     graph: graphResult.graph,
     manualReview: graphResult.manualReview,
     basePath: projectConfig.basePath,
     reportLimit,
   });
+  const hasNonLeafTypeScriptFile =
+    findNonLeafTypeScriptFiles(graphResult.graph).length > 0;
+
+  return {
+    output,
+    exitCode: !args["dry-run"] && hasNonLeafTypeScriptFile ? 1 : 0,
+  };
 }
 
 function runWhyCommand(
@@ -80,7 +107,9 @@ function runWhyCommand(
 }
 
 async function main(): Promise<void> {
-  console.log(runCli());
+  const result = runCliCommand();
+  console.log(result.output);
+  process.exitCode = result.exitCode;
 }
 
 function helpText(): string {
@@ -92,6 +121,7 @@ Options:
   --entry <file>        Entry point. May be passed multiple times.
   --config, -c <file>   Path to tsconfig.json. Defaults to nearest tsconfig.
   --tsconfig <file>     Alias for --config.
+  --dry-run             Do not fail when non-leaf TypeScript files are reported.
   --report-limit <n>    Limit reports shown per section. Defaults to 10.
   --no-report-limit     Disable per-section report limits.
   --help, -h            Show this help message.

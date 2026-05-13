@@ -93,7 +93,7 @@ export function formatMigrationReport(input: ReportInput): string {
     pushLimitInfo(lines, visibleCycles, reportLimit);
   }
 
-  const typeScriptFilesWithJsDependencies = findTypeScriptFilesWithJsDependencies(
+  const typeScriptFilesWithJsDependencies = findNonLeafTypeScriptFiles(
     input.graph,
   );
   if (typeScriptFilesWithJsDependencies.length > 0) {
@@ -112,7 +112,7 @@ export function formatMigrationReport(input: ReportInput): string {
       lines.push(
         formatListItem(
           index + 1,
-          formatFile(item.file, input.basePath),
+          formatFile(item, input.basePath),
           typeScriptWarningMarkerWidth,
         ),
       );
@@ -316,10 +316,10 @@ function relativePath(file: string, basePath: string): string {
   return path.relative(basePath, file) || path.basename(file);
 }
 
-function findTypeScriptFilesWithJsDependencies(
+export function findNonLeafTypeScriptFiles(
   graph: DependencyGraph,
-): Array<{ file: string; dependencies: string[] }> {
-  const items: Array<{ file: string; dependencies: string[] }> = [];
+): string[] {
+  const items: string[] = [];
 
   for (const [file, dependencies] of graph) {
     if (!isTypeScriptFile(file)) {
@@ -328,11 +328,11 @@ function findTypeScriptFilesWithJsDependencies(
 
     const jsDependencies = [...dependencies].filter(isJavaScriptFile).sort();
     if (jsDependencies.length > 0) {
-      items.push({ file, dependencies: jsDependencies });
+      items.push(file);
     }
   }
 
-  return items.sort((left, right) => left.file.localeCompare(right.file));
+  return items.sort((left, right) => left.localeCompare(right));
 }
 
 function isCycle(files: string[], graph: DependencyGraph): boolean {

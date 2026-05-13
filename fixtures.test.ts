@@ -7,7 +7,7 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import { loadTsConfig } from "./src/config.js";
 import { buildDependencyGraph } from "./src/graph.js";
-import { runCli } from "./src/index.js";
+import { runCli, runCliCommand } from "./src/index.js";
 import { determineMigrationOrder } from "./src/order.js";
 import {
   formatMigrationReport,
@@ -148,6 +148,37 @@ describe("TypeScript files with JavaScript dependencies", () => {
         "",
       ].join("\n"),
     );
+  });
+});
+
+describe("CLI exit status", () => {
+  it("fails when the project has a non-leaf TypeScript file", () => {
+    const result = runCliCommand(
+      [
+        "--config",
+        "fixtures/typescript-middle-js-leaf/tsconfig.json",
+        "fixtures/typescript-middle-js-leaf/src/index",
+      ],
+      repoRoot,
+    );
+
+    expect(result.exitCode).toBe(1);
+    expect(stripAnsi(result.output)).toContain("1. src/greeting.ts");
+  });
+
+  it("keeps a successful exit status for non-leaf TypeScript files in dry-run mode", () => {
+    const result = runCliCommand(
+      [
+        "--dry-run",
+        "--config",
+        "fixtures/typescript-middle-js-leaf/tsconfig.json",
+        "fixtures/typescript-middle-js-leaf/src/index",
+      ],
+      repoRoot,
+    );
+
+    expect(result.exitCode).toBe(0);
+    expect(stripAnsi(result.output)).toContain("1. src/greeting.ts");
   });
 });
 
