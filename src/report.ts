@@ -156,17 +156,17 @@ export function formatWhyReport(input: WhyReportInput): string {
   const formattedFile = formatFile(file, input.basePath);
 
   if (!isTypeScriptFile(file)) {
-    return indentContent(`${formattedFile} is not a TypeScript file.`);
+    return formatWhyMessage(`${formattedFile} is not a TypeScript file.`);
   }
 
   const dependencies = input.graph.get(file);
   if (!dependencies) {
-    return indentContent(`No dependency information found for ${formattedFile}.`);
+    return formatWhyMessage(`No dependency information found for ${formattedFile}.`);
   }
 
   const jsDependencies = [...dependencies].filter(isJavaScriptFile).sort();
   if (jsDependencies.length === 0) {
-    return indentContent(`No JavaScript dependencies found for ${formattedFile}.`);
+    return formatWhyMessage(`No JavaScript dependencies found for ${formattedFile}.`);
   }
 
   const lines: string[] = [];
@@ -189,8 +189,13 @@ export function formatWhyReport(input: WhyReportInput): string {
       ),
     );
   });
+  lines.push("");
 
   return lines.join("\n");
+}
+
+function formatWhyMessage(message: string): string {
+  return [indentContent(message), ""].join("\n");
 }
 
 function pushHeader(lines: string[], title: string): void {

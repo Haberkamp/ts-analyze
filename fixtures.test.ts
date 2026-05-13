@@ -120,6 +120,7 @@ describe("TypeScript files with JavaScript dependencies", () => {
         "",
         " 1. src/greeting.ts imports src/punctuation.js",
         " 2. src/punctuation.js is JavaScript, so src/greeting.ts is not a TypeScript leaf.",
+        "",
       ].join("\n"),
     );
   });
@@ -144,6 +145,7 @@ describe("TypeScript files with JavaScript dependencies", () => {
         "",
         " 1. src/greeting.ts imports src/punctuation.js",
         " 2. src/punctuation.js is JavaScript, so src/greeting.ts is not a TypeScript leaf.",
+        "",
       ].join("\n"),
     );
   });
@@ -249,6 +251,7 @@ describe("report styling", () => {
         "",
         " 1. src/ts-warning-01.ts imports src/ts-warning-01.js",
         " 2. src/ts-warning-01.js is JavaScript, so src/ts-warning-01.ts is not a TypeScript leaf.",
+        "",
       ].join("\n"),
     );
   });
