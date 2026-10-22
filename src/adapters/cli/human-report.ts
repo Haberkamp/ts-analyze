@@ -2,7 +2,7 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 
 import type { Explanation } from "../../application/analyze-project.js";
-import type { Analysis, PriorityStep } from "../../domain/model.js";
+import type { Analysis, Cycle, PriorityStep } from "../../domain/model.js";
 
 export interface HumanReportOptions {
   readonly root: string;
@@ -16,10 +16,14 @@ export function renderHumanReport(analysis: Analysis, options: HumanReportOption
   const style = createStyle(options);
   const lines: string[] = [];
 
-  const section = <T>(title: string, items: readonly T[], render: (item: T, marker: string) => string[]): void => {
+  const section = <T>(
+    title: string,
+    items: readonly T[],
+    render: (item: T, marker: string, index: number) => string[],
+  ): void => {
     lines.push(style.bold(`${title} (${items.length})`), "");
     const visible = options.reportLimit === undefined ? items : items.slice(0, options.reportLimit);
-    visible.forEach((item, index) => lines.push(...render(item, `${index + 1}. `)));
+    visible.forEach((item, index) => lines.push(...render(item, `${index + 1}. `, index)));
     if (visible.length < items.length) {
       lines.push(
         style.dim(`  … ${items.length - visible.length} more (use --report-limit <n> or --no-report-limit to show more)`),
@@ -36,11 +40,10 @@ export function renderHumanReport(analysis: Analysis, options: HumanReportOption
   lines.push("");
 
   if (analysis.cycles.length > 0) {
-    section("Circular dependencies", analysis.cycles, (cycle, marker) => {
-      const others = cycle.files.filter((file) => !cycle.path.includes(file));
-      const suffix = others.length > 0 ? style.dim(` (group also includes ${others.map(style.file).join(", ")})`) : "";
-      return [`  ${marker}${cycle.path.map(style.file).join(" → ")}${suffix}`];
-    });
+    section("Circular dependencies", analysis.cycles, (cycle, marker, index) => [
+      ...(index > 0 ? [""] : []),
+      ...renderCycle(cycle, marker, style),
+    ]);
     lines.push("");
   }
 
@@ -49,7 +52,7 @@ export function renderHumanReport(analysis: Analysis, options: HumanReportOption
       `  ${marker}${style.file(branch.file)}`,
       ...branch.imports.map(
         (dependency) =>
-          `${" ".repeat(2 + marker.length)}imports ${style.file(dependency.file)} ${style.dim(`(line ${dependency.line})`)}`,
+          `${" ".repeat(4 + marker.length)}imports ${style.yellow(style.file(dependency.file))}  ${style.dim(`[line ${dependency.line}]`)}`,
       ),
     ]);
     lines.push("");
@@ -57,7 +60,7 @@ export function renderHumanReport(analysis: Analysis, options: HumanReportOption
 
   if (analysis.manualReview.length > 0) {
     section("Manual review", analysis.manualReview, (item, marker) => [
-      `  ${marker}${style.file(item.file)}:${item.line}  ${item.reason}: ${item.detail}`,
+      `  ${marker}${style.file(item.file)}:${item.line}  ${item.detail.replace(/\s+/g, " ")}  ${style.dim(`[${item.reason}]`)}`,
     ]);
     lines.push("");
   }
@@ -96,7 +99,34 @@ function formatTags(step: PriorityStep, style: Style): string {
     ...(step.ready ? ["ready"] : []),
     ...(step.fixesMixedBranch ? ["fixes mixed branch"] : []),
   ];
-  return tags.length === 0 ? "" : `  ${(step.fixesMixedBranch ? style.yellow : style.dim)(`[${tags.join(", ")}]`)}`;
+  return tags.length === 0 ? "" : `  ${style.dim(`[${tags.join(", ")}]`)}`;
+}
+
+/**
+ * One file per line with an arrow to the file it imports; the bracket on the left
+ * leads from the last file back up to the first:
+ *
+ *   1. ┌─▶ src/a.js
+ *      │   ↓
+ *      └── src/b.js
+ */
+function renderCycle(cycle: Cycle, marker: string, style: Style): string[] {
+  const indent = " ".repeat(2 + marker.length);
+  const files = cycle.path.slice(0, -1);
+  const [first = ""] = files;
+  if (files.length === 1) {
+    return [`  ${marker}${style.file(first)}  ${style.dim("[imports itself]")}`];
+  }
+  const lines = files.flatMap((file, position) => {
+    const isLast = position === files.length - 1;
+    const prefix = position === 0 ? `  ${marker}${style.dim("┌─▶")}` : `${indent}${style.dim(isLast ? "└──" : "│  ")}`;
+    return [`${prefix} ${style.file(file)}`, ...(isLast ? [] : [`${indent}${style.dim("│   ↓")}`])];
+  });
+  const others = cycle.files.length - files.length;
+  if (others > 0) {
+    lines.push(`${indent}    ${style.dim(`[+${others} more ${others === 1 ? "file" : "files"} in this cycle group]`)}`);
+  }
+  return lines;
 }
 
 function verdict(count: number, dryRun: boolean, style: Style): string {
