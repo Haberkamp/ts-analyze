@@ -1,0 +1,7 @@
+{
+  // Project config extends a shared base.
+  "extends": "./configs/base.json",
+  "compilerOptions": {
+    "allowJs": true,
+  },
+}

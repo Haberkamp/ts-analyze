@@ -1,0 +1,9 @@
+{
+  "name": "conditional-imports",
+  "imports": {
+    "#dep": {
+      "import": "./src/dep.mjs",
+      "require": "./src/dep.cjs"
+    }
+  }
+}
