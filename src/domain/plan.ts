@@ -27,7 +27,7 @@ export function planFile(graph: ModuleGraph, file: string): FilePlan {
   }
 
   const subgraph = new Map<string, Dependency[]>(
-    [...required].map((member) => [
+    Array.from(required, (member) => [
       member,
       (graph.get(member) ?? []).filter((dependency) => required.has(dependency.file)),
     ]),

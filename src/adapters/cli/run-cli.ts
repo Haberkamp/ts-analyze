@@ -19,6 +19,7 @@ export interface CliResult {
 }
 
 const DEFAULT_REPORT_LIMIT = 10;
+const NON_NEGATIVE_INTEGER = /^\d+$/;
 
 const HELP = `Usage:
   ts-analyze [options] <entry...>
@@ -175,7 +176,7 @@ function parseReportLimit(value: string | undefined): number {
   if (value === undefined) {
     return DEFAULT_REPORT_LIMIT;
   }
-  if (!/^\d+$/.test(value)) {
+  if (!NON_NEGATIVE_INTEGER.test(value)) {
     throw new UsageError(`--report-limit must be a non-negative integer, got "${value}".`);
   }
   return Number(value);

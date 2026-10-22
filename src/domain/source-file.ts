@@ -5,9 +5,12 @@ const JAVASCRIPT_EXTENSIONS = [".js", ".jsx", ".mjs", ".cjs"];
 
 export const SOURCE_EXTENSIONS = [...TYPESCRIPT_EXTENSIONS, ...JAVASCRIPT_EXTENSIONS];
 
+const DECLARATION_FILE = /\.d\.([^./\\]+\.)?[cm]?ts$/;
+const EXTENSION = /\.[^./\\]+$/;
+
 /** Matches foo.d.ts, foo.d.mts, foo.d.cts and arbitrary-extension declarations like foo.d.css.ts. */
 export function isDeclarationFile(file: string): boolean {
-  return /\.d\.([^./\\]+\.)?[cm]?ts$/.test(file);
+  return DECLARATION_FILE.test(file);
 }
 
 /** Returns the language of a migratable source file, or undefined for declarations and non-code files. */
@@ -15,7 +18,7 @@ export function languageOf(file: string): Language | undefined {
   if (isDeclarationFile(file)) {
     return undefined;
   }
-  const extension = /\.[^./\\]+$/.exec(file)?.[0];
+  const extension = EXTENSION.exec(file)?.[0];
   if (extension === undefined) {
     return undefined;
   }
