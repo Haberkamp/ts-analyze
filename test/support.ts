@@ -75,10 +75,7 @@ export function run(
   return runCli(args, { cwd, color: options.color ?? false });
 }
 
-export function analyzeFixture(
-  name: string,
-  entries: string[] = ["src"],
-): { exitCode: number; report: JsonReport } {
+export function analyzeFixture(name: string, entries: string[] = ["src"]): { exitCode: number; report: JsonReport } {
   const result = run(copyFixture(name), ["--format", "json", ...entries]);
   if (result.stderr !== "") {
     throw new Error(`Unexpected stderr: ${result.stderr}`);

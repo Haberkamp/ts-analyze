@@ -58,7 +58,7 @@ export interface Analysis {
   readonly manualReview: ManualReviewItem[];
 }
 
-export interface MigrationStep {
+interface MigrationStep {
   /** JavaScript files to migrate in this step; more than one means a cycle group. */
   readonly files: string[];
   readonly cycle: boolean;

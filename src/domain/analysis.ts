@@ -1,12 +1,4 @@
-import type {
-  Analysis,
-  Cycle,
-  Dependency,
-  ManualReviewItem,
-  MixedBranch,
-  ModuleGraph,
-  PriorityStep,
-} from "./model.js";
+import type { Analysis, Cycle, Dependency, ManualReviewItem, MixedBranch, ModuleGraph, PriorityStep } from "./model.js";
 import { languageOf } from "./source-file.js";
 
 interface Component {
@@ -41,9 +33,7 @@ export function analyzeGraph(graph: ModuleGraph, manualReview: readonly ManualRe
       .map((component) => describeCycle(component.files, successors))
       .sort((left, right) => compareText(left.files[0], right.files[0])),
     mixedBranches,
-    manualReview: [...manualReview].sort(
-      (left, right) => compareText(left.file, right.file) || left.line - right.line,
-    ),
+    manualReview: manualReview.toSorted((left, right) => compareText(left.file, right.file) || left.line - right.line),
   };
 }
 
@@ -55,10 +45,14 @@ function uniqueTargets(dependencies: readonly Dependency[]): string[] {
 function buildComponents(files: string[], successors: Map<string, string[]>): Component[] {
   const groups = stronglyConnectedComponents(files, (file) => successors.get(file) ?? []);
   const indexByFile = new Map<string, number>();
-  groups.forEach((group, index) => group.forEach((file) => indexByFile.set(file, index)));
+  groups.forEach((group, index) => {
+    for (const file of group) {
+      indexByFile.set(file, index);
+    }
+  });
 
   const components = groups.map((group): Component => {
-    const sorted = [...group].sort();
+    const sorted = group.toSorted();
     return {
       files: sorted,
       javascript: sorted.filter((file) => languageOf(file) === "javascript"),
@@ -102,7 +96,11 @@ function buildComponents(files: string[], successors: Map<string, string[]>): Co
 
 function componentIndex(components: Component[]): Map<string, number> {
   const index = new Map<string, number>();
-  components.forEach((component, position) => component.files.forEach((file) => index.set(file, position)));
+  components.forEach((component, position) => {
+    for (const file of component.files) {
+      index.set(file, position);
+    }
+  });
   return index;
 }
 
@@ -180,7 +178,11 @@ function prioritize(components: Component[]): PriorityStep[] {
     }
   };
 
-  remaining.forEach((count, index) => count === 0 && release(index));
+  remaining.forEach((count, index) => {
+    if (count === 0) {
+      release(index);
+    }
+  });
   for (;;) {
     const passThrough = migrated.pop();
     if (passThrough !== undefined) {
@@ -267,7 +269,7 @@ function stronglyConnectedComponents(nodes: string[], successorsOf: (node: strin
     open(root);
     const frames = [{ node: root, successors: successorsOf(root), position: 0 }];
     while (frames.length > 0) {
-      const frame = frames[frames.length - 1];
+      const frame = frames.at(-1);
       if (frame === undefined) {
         break;
       }
@@ -283,7 +285,7 @@ function stronglyConnectedComponents(nodes: string[], successorsOf: (node: strin
         continue;
       }
       frames.pop();
-      const parent = frames[frames.length - 1];
+      const parent = frames.at(-1);
       if (parent !== undefined) {
         lowLink.set(parent.node, Math.min(lowLink.get(parent.node) ?? 0, lowLink.get(frame.node) ?? 0));
       }

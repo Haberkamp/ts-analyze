@@ -90,13 +90,7 @@ describe("migration priority", () => {
       ["src/helpers/format.js"],
       ["src/main.js"],
     ]);
-    expect(report.priority.map((step) => step.fixesMixedBranch)).toEqual([
-      true,
-      true,
-      true,
-      false,
-      false,
-    ]);
+    expect(report.priority.map((step) => step.fixesMixedBranch)).toEqual([true, true, true, false, false]);
   });
 
   it("handles import chains deeper than the call stack", () => {
@@ -253,18 +247,14 @@ describe("circular dependencies", () => {
       { files: ["src/a.js", "src/b.js"], cycle: true, ready: true, fixesMixedBranch: false, importedBy: 1 },
       { files: ["src/index.js"], cycle: false, ready: false, fixesMixedBranch: false, importedBy: 0 },
     ]);
-    expect(report.cycles).toEqual([
-      { files: ["src/a.js", "src/b.js"], path: ["src/a.js", "src/b.js", "src/a.js"] },
-    ]);
+    expect(report.cycles).toEqual([{ files: ["src/a.js", "src/b.js"], path: ["src/a.js", "src/b.js", "src/a.js"] }]);
   });
 
   it("shows cycles that cross the JS/TS boundary and flags the mixed branch inside them", () => {
     const { exitCode, report } = analyzeFixture("mixed-cycle", ["src/index.js"]);
 
     expect(exitCode).toBe(1);
-    expect(report.cycles).toEqual([
-      { files: ["src/a.js", "src/b.ts"], path: ["src/a.js", "src/b.ts", "src/a.js"] },
-    ]);
+    expect(report.cycles).toEqual([{ files: ["src/a.js", "src/b.ts"], path: ["src/a.js", "src/b.ts", "src/a.js"] }]);
     expect(report.mixedBranches).toEqual([
       { file: "src/b.ts", imports: [{ file: "src/a.js", specifier: "./a.js", line: 1 }] },
     ]);
@@ -281,9 +271,7 @@ describe("circular dependencies", () => {
     const { exitCode, report } = analyzeFixture("typescript-cycle", ["src/index.js"]);
 
     expect(exitCode).toBe(0);
-    expect(report.cycles).toEqual([
-      { files: ["src/a.ts", "src/b.ts"], path: ["src/a.ts", "src/b.ts", "src/a.ts"] },
-    ]);
+    expect(report.cycles).toEqual([{ files: ["src/a.ts", "src/b.ts"], path: ["src/a.ts", "src/b.ts", "src/a.ts"] }]);
     expect(priorityFiles(report)).toEqual([["src/index.js"]]);
   });
 
@@ -294,11 +282,7 @@ describe("circular dependencies", () => {
       { files: ["src/a.js", "src/b.js", "src/c.js"], path: ["src/a.js", "src/b.js", "src/a.js"] },
       { files: ["src/self.js"], path: ["src/self.js", "src/self.js"] },
     ]);
-    expect(priorityFiles(report)).toEqual([
-      ["src/a.js", "src/b.js", "src/c.js"],
-      ["src/self.js"],
-      ["src/index.js"],
-    ]);
+    expect(priorityFiles(report)).toEqual([["src/a.js", "src/b.js", "src/c.js"], ["src/self.js"], ["src/index.js"]]);
     expect(report.priority.map((step) => step.cycle)).toEqual([true, true, false]);
   });
 });
@@ -358,12 +342,7 @@ describe("TypeScript and JavaScript configuration", () => {
   it("uses import and require conditions for ESM and CommonJS importers", () => {
     const { report } = analyzeFixture("conditional-imports", ["src/index.mjs", "src/legacy.cjs"]);
 
-    expect(priorityFiles(report)).toEqual([
-      ["src/dep.cjs"],
-      ["src/dep.mjs"],
-      ["src/index.mjs"],
-      ["src/legacy.cjs"],
-    ]);
+    expect(priorityFiles(report)).toEqual([["src/dep.cjs"], ["src/dep.mjs"], ["src/index.mjs"], ["src/legacy.cjs"]]);
   });
 
   it("resolves extensionless and directory index imports with bundler resolution", () => {
@@ -448,11 +427,7 @@ describe("entry points", () => {
     const { report } = analyzeFixture("directory-entry", ["."]);
 
     expect(report.summary).toEqual({ files: 3, javascript: 3, typescript: 0 });
-    expect(priorityFiles(report)).toEqual([
-      ["src/lib/helper.js"],
-      ["src/lib/standalone.js"],
-      ["src/index.js"],
-    ]);
+    expect(priorityFiles(report)).toEqual([["src/lib/helper.js"], ["src/lib/standalone.js"], ["src/index.js"]]);
   });
 
   it("accepts extensionless entry points", () => {

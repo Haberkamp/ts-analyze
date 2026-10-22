@@ -68,4 +68,3 @@ function buildGraph(
 
   return { graph, manualReview };
 }
-

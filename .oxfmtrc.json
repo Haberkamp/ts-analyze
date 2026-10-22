@@ -1,0 +1,5 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "printWidth": 120,
+  "ignorePatterns": ["fixtures/**", "test/__snapshots__/**", "package-lock.json", "CHANGELOG.md"]
+}

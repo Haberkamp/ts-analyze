@@ -2,28 +2,43 @@
   "name": "ts-analyze",
   "version": "0.3.0",
   "description": "Find the order to migrate a JavaScript project to TypeScript, show circular dependencies, and fail when TypeScript imports JavaScript.",
-  "type": "module",
+  "keywords": [],
+  "license": "ISC",
+  "author": "",
   "bin": {
     "ts-analyze": "dist/index.js"
   },
   "files": [
     "dist"
   ],
+  "type": "module",
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "prepack": "npm run build",
     "start": "node ./dist/index.js",
     "test": "vitest run",
-    "check": "tsc -p tsconfig.json --noEmit && tsc -p test/tsconfig.json"
+    "check": "tsc -p tsconfig.json --noEmit && tsc -p test/tsconfig.json",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
+    "knip": "knip",
+    "e18e": "e18e-cli analyze --log-level error",
+    "commitlint": "commitlint"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "typescript": "^6.0.3"
   },
   "devDependencies": {
+    "@commitlint/cli": "^21.2.4",
+    "@commitlint/config-conventional": "^21.2.4",
+    "@e18e/cli": "^0.7.0",
+    "@e18e/eslint-plugin": "^0.8.1",
     "@types/node": "^25.6.0",
+    "knip": "^6.42.1",
+    "oxfmt": "^0.74.0",
+    "oxlint": "^1.89.0",
+    "oxlint-tsgolint": "^7.0.2004",
     "pkg-pr-new": "^0.0.91",
     "vitest": "^4.1.5"
   },

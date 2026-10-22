@@ -115,8 +115,13 @@ export function renderInspection(
 
   lines.push(style.bold(`Direct imports (${imports.length})`), "");
   imports.forEach((dependency, index) => {
-    const name = languageOf(dependency.file) === "javascript" ? style.yellow(style.file(dependency.file)) : style.file(dependency.file);
-    lines.push(`  ${index + 1}. ${name}${tagList([`${languageName(dependency.file)}, line ${dependency.line}`], style)}`);
+    const name =
+      languageOf(dependency.file) === "javascript"
+        ? style.yellow(style.file(dependency.file))
+        : style.file(dependency.file);
+    lines.push(
+      `  ${index + 1}. ${name}${tagList([`${languageName(dependency.file)}, line ${dependency.line}`], style)}`,
+    );
   });
   if (imports.length === 0) {
     lines.push("  None.");
@@ -165,7 +170,8 @@ function inspectionVerdict({ file, plan }: Inspection, style: Style): string {
   }
   const before = plan.slice(0, -1).reduce((sum, step) => sum + step.files.length, 0);
   const together = (plan.at(-1)?.files.length ?? 1) - 1;
-  const cycle = together > 0 ? ` together with ${together} other ${together === 1 ? "file" : "files"} in its import cycle` : "";
+  const cycle =
+    together > 0 ? ` together with ${together} other ${together === 1 ? "file" : "files"} in its import cycle` : "";
   if (before === 0) {
     return together === 0
       ? style.green(`✔ ${name} can be migrated now: it imports no JavaScript.`)
@@ -231,13 +237,13 @@ function verdict(count: number, dryRun: boolean, style: Style): string {
 }
 
 interface Style {
-  bold(text: string): string;
-  dim(text: string): string;
-  red(text: string): string;
-  green(text: string): string;
-  yellow(text: string): string;
+  readonly bold: (text: string) => string;
+  readonly dim: (text: string) => string;
+  readonly red: (text: string) => string;
+  readonly green: (text: string) => string;
+  readonly yellow: (text: string) => string;
   /** Path relative to the root, hyperlinked to the file when color is enabled. */
-  file(file: string): string;
+  readonly file: (file: string) => string;
 }
 
 function createStyle(options: { readonly root: string; readonly color: boolean }): Style {

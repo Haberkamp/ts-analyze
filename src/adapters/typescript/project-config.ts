@@ -84,17 +84,11 @@ function parseWithReferences(rootConfig: string): ParsedProject[] {
 }
 
 function parseConfig(configFile: string): ts.ParsedCommandLine {
-  const read = ts.readConfigFile(configFile, ts.sys.readFile);
+  const read = ts.readConfigFile(configFile, (file) => ts.sys.readFile(file));
   if (read.error) {
     throw new UsageError(`Invalid config ${configFile}: ${formatDiagnostic(read.error)}`);
   }
-  const parsed = ts.parseJsonConfigFileContent(
-    read.config,
-    ts.sys,
-    path.dirname(configFile),
-    undefined,
-    configFile,
-  );
+  const parsed = ts.parseJsonConfigFileContent(read.config, ts.sys, path.dirname(configFile), undefined, configFile);
   // Only a missing file (e.g. an unresolvable "extends") changes resolution; option-level
   // diagnostics such as "no inputs found" or options from other TypeScript versions do not.
   const fatal = parsed.errors.find((diagnostic) => diagnostic.code === FILE_NOT_FOUND);
