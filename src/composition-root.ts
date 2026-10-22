@@ -2,8 +2,8 @@ import { FileSystemEntryPointFinder } from "./adapters/filesystem/entry-point-fi
 import { TypeScriptImportScanner } from "./adapters/typescript/import-scanner.js";
 import { TypeScriptModuleResolver } from "./adapters/typescript/module-resolver.js";
 import { loadTypeScriptProject } from "./adapters/typescript/project-config.js";
-import { analyzeProject, explainFile } from "./application/analyze-project.js";
-import type { Explanation } from "./application/analyze-project.js";
+import { analyzeProject, inspectFile } from "./application/analyze-project.js";
+import type { Inspection } from "./application/analyze-project.js";
 import type { AnalysisPorts } from "./application/ports.js";
 import type { Analysis } from "./domain/model.js";
 
@@ -11,7 +11,7 @@ export interface Application {
   /** Directory that reported paths are relative to. */
   readonly root: string;
   analyze(entries: readonly string[]): Analysis;
-  explain(file: string): Explanation;
+  inspect(file: string): Inspection;
 }
 
 /** Wires the use cases to the file system and TypeScript adapters. */
@@ -25,6 +25,6 @@ export function createApplication(cwd: string, configPath?: string): Application
   return {
     root: project.root,
     analyze: (entries) => analyzeProject(entries, ports),
-    explain: (file) => explainFile(file, ports),
+    inspect: (file) => inspectFile(file, ports),
   };
 }

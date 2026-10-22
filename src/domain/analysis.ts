@@ -112,22 +112,26 @@ function findMixedBranches(files: string[], graph: ModuleGraph): MixedBranch[] {
     if (languageOf(file) !== "typescript") {
       continue;
     }
-    // One entry per imported file: its first import.
-    const firstImports = new Map<string, Dependency>();
-    for (const dependency of graph.get(file) ?? []) {
-      const first = firstImports.get(dependency.file);
-      if (languageOf(dependency.file) === "javascript" && (first === undefined || dependency.line < first.line)) {
-        firstImports.set(dependency.file, dependency);
-      }
-    }
-    if (firstImports.size > 0) {
-      const imports = [...firstImports.values()].sort(
-        (left, right) => left.line - right.line || compareText(left.file, right.file),
-      );
+    const imports = firstImportPerFile(
+      (graph.get(file) ?? []).filter((dependency) => languageOf(dependency.file) === "javascript"),
+    );
+    if (imports.length > 0) {
       branches.push({ file, imports });
     }
   }
   return branches;
+}
+
+/** One entry per imported file (its first import), in source order. */
+export function firstImportPerFile(dependencies: readonly Dependency[]): Dependency[] {
+  const first = new Map<string, Dependency>();
+  for (const dependency of dependencies) {
+    const existing = first.get(dependency.file);
+    if (existing === undefined || dependency.line < existing.line) {
+      first.set(dependency.file, dependency);
+    }
+  }
+  return [...first.values()].sort((left, right) => left.line - right.line || compareText(left.file, right.file));
 }
 
 /** Marks every component that must be migrated before the JavaScript imported by TypeScript can be. */

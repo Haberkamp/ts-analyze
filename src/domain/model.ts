@@ -57,3 +57,22 @@ export interface Analysis {
   readonly mixedBranches: MixedBranch[];
   readonly manualReview: ManualReviewItem[];
 }
+
+export interface MigrationStep {
+  /** JavaScript files to migrate in this step; more than one means a cycle group. */
+  readonly files: string[];
+  readonly cycle: boolean;
+  /** JavaScript outside the step that it imports; empty means the step is ready. */
+  readonly imports: Dependency[];
+}
+
+/** What to migrate, in order, before one file can be TypeScript without importing JavaScript. */
+export interface FilePlan {
+  readonly file: string;
+  /** The file imports no JavaScript. */
+  readonly ready: boolean;
+  /** Source files it imports directly: one entry per file, in source order. */
+  readonly imports: Dependency[];
+  /** Dependencies first. Ends with the file itself (or its cycle group) when it is JavaScript. */
+  readonly plan: MigrationStep[];
+}

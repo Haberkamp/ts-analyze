@@ -19,6 +19,8 @@ Summary
   Total     2 files
 
 ✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
+
+Tip: run \`ts-analyze inspect <file>\` to see what to migrate before a specific file, in order.
 "
 `;
 
@@ -37,6 +39,8 @@ Summary
   Total     2 files
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
+
+Tip: run \`ts-analyze inspect <file>\` to see what to migrate before a specific file, in order.
 "
 `;
 
@@ -58,6 +62,8 @@ Summary
   Total     5 files
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
+
+Tip: run \`ts-analyze inspect <file>\` to see what to migrate before a specific file, in order.
 "
 `;
 
@@ -82,6 +88,8 @@ Summary
   Total     3 files
 
 ✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
+
+Tip: run \`ts-analyze inspect <file>\` to see what to migrate before a specific file, in order.
 "
 `;
 
@@ -104,6 +112,8 @@ Summary
   Total     6 files
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
+
+Tip: run \`ts-analyze inspect <file>\` to see what to migrate before a specific file, in order.
 "
 `;
 
@@ -123,6 +133,8 @@ Summary
   Total     3 files
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
+
+Tip: run \`ts-analyze inspect <file>\` to see what to migrate before a specific file, in order.
 "
 `;
 
@@ -149,6 +161,8 @@ Summary
   Total     6 files
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
+
+Tip: run \`ts-analyze inspect <file>\` to see what to migrate before a specific file, in order.
 "
 `;
 
@@ -169,6 +183,8 @@ Summary
   Total     4 files
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
+
+Tip: run \`ts-analyze inspect <file>\` to see what to migrate before a specific file, in order.
 "
 `;
 
@@ -193,6 +209,8 @@ Summary
   Total     3 files
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
+
+Tip: run \`ts-analyze inspect <file>\` to see what to migrate before a specific file, in order.
 "
 `;
 
@@ -222,6 +240,8 @@ Summary
   Total     5 files
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
+
+Tip: run \`ts-analyze inspect <file>\` to see what to migrate before a specific file, in order.
 "
 `;
 
@@ -258,6 +278,8 @@ Summary
   Total     3 files
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
+
+Tip: run \`ts-analyze inspect <file>\` to see what to migrate before a specific file, in order.
 "
 `;
 
@@ -282,6 +304,8 @@ Summary
   Total     3 files
 
 ✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
+
+Tip: run \`ts-analyze inspect <file>\` to see what to migrate before a specific file, in order.
 "
 `;
 
@@ -304,6 +328,8 @@ Summary
   Total     2 files
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
+
+Tip: run \`ts-analyze inspect <file>\` to see what to migrate before a specific file, in order.
 "
 `;
 
@@ -339,6 +365,8 @@ Summary
   Total     2 files
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
+
+Tip: run \`ts-analyze inspect <file>\` to see what to migrate before a specific file, in order.
 "
 `;
 
@@ -360,6 +388,8 @@ Summary
   Total     1 file
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
+
+Tip: run \`ts-analyze inspect <file>\` to see what to migrate before a specific file, in order.
 "
 `;
 
@@ -384,6 +414,8 @@ Summary
   Total     4 files
 
 ✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
+
+Tip: run \`ts-analyze inspect <file>\` to see what to migrate before a specific file, in order.
 "
 `;
 
@@ -413,6 +445,8 @@ Summary
   Total     3 files
 
 ✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
+
+Tip: run \`ts-analyze inspect <file>\` to see what to migrate before a specific file, in order.
 "
 `;
 
@@ -439,6 +473,8 @@ Summary
   Total     5 files
 
 ✖ 2 TypeScript files import JavaScript. Migrate the files marked "fixes mixed branch" first.
+
+Tip: run \`ts-analyze inspect <file>\` to see what to migrate before a specific file, in order.
 "
 `;
 
@@ -459,6 +495,8 @@ Summary
   Total     4 files
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
+
+Tip: run \`ts-analyze inspect <file>\` to see what to migrate before a specific file, in order.
 "
 `;
 
@@ -481,6 +519,8 @@ Summary
   Total     6 files
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
+
+Tip: run \`ts-analyze inspect <file>\` to see what to migrate before a specific file, in order.
 "
 `;
 
@@ -499,6 +539,8 @@ Summary
   Total     2 files
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
+
+Tip: run \`ts-analyze inspect <file>\` to see what to migrate before a specific file, in order.
 "
 `;
 
@@ -517,6 +559,8 @@ Summary
   Total     2 files
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
+
+Tip: run \`ts-analyze inspect <file>\` to see what to migrate before a specific file, in order.
 "
 `;
 
@@ -539,6 +583,8 @@ Summary
   Total     2 files
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
+
+Tip: run \`ts-analyze inspect <file>\` to see what to migrate before a specific file, in order.
 "
 `;
 
@@ -560,6 +606,8 @@ Summary
   Total     5 files
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
+
+Tip: run \`ts-analyze inspect <file>\` to see what to migrate before a specific file, in order.
 "
 `;
 
@@ -594,6 +642,8 @@ Summary
   Total     5 files
 
 ✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
+
+Tip: run \`ts-analyze inspect <file>\` to see what to migrate before a specific file, in order.
 "
 `;
 
@@ -616,6 +666,8 @@ Summary
   Total     3 files
 
 ✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
+
+Tip: run \`ts-analyze inspect <file>\` to see what to migrate before a specific file, in order.
 "
 `;
 
@@ -644,6 +696,8 @@ Summary
   Total     7 files
 
 ✖ 2 TypeScript files import JavaScript. Migrate the files marked "fixes mixed branch" first.
+
+Tip: run \`ts-analyze inspect <file>\` to see what to migrate before a specific file, in order.
 "
 `;
 
@@ -666,6 +720,8 @@ Summary
   Total     3 files
 
 ✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
+
+Tip: run \`ts-analyze inspect <file>\` to see what to migrate before a specific file, in order.
 "
 `;
 
@@ -688,6 +744,8 @@ Summary
   Total     2 files
 
 ✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
+
+Tip: run \`ts-analyze inspect <file>\` to see what to migrate before a specific file, in order.
 "
 `;
 
@@ -706,6 +764,8 @@ Summary
   Total     2 files
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
+
+Tip: run \`ts-analyze inspect <file>\` to see what to migrate before a specific file, in order.
 "
 `;
 
@@ -729,6 +789,8 @@ Summary
   Total     3 files
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
+
+Tip: run \`ts-analyze inspect <file>\` to see what to migrate before a specific file, in order.
 "
 `;
 
@@ -747,6 +809,8 @@ Summary
   Total     4 files
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
+
+Tip: run \`ts-analyze inspect <file>\` to see what to migrate before a specific file, in order.
 "
 `;
 
@@ -770,6 +834,8 @@ Summary
   Total     3 files
 
 ✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
+
+Tip: run \`ts-analyze inspect <file>\` to see what to migrate before a specific file, in order.
 "
 `;
 
@@ -798,6 +864,8 @@ Summary
   Total     5 files
 
 ✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
+
+Tip: run \`ts-analyze inspect <file>\` to see what to migrate before a specific file, in order.
 "
 `;
 
@@ -837,5 +905,7 @@ Summary
   Total     2 files
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
+
+Tip: run \`ts-analyze inspect <file>\` to see what to migrate before a specific file, in order.
 "
 `;

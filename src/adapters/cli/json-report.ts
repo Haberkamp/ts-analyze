@@ -1,7 +1,8 @@
 import path from "node:path";
 
-import type { Explanation } from "../../application/analyze-project.js";
+import type { Inspection } from "../../application/analyze-project.js";
 import type { Analysis, Dependency } from "../../domain/model.js";
+import { languageOf } from "../../domain/source-file.js";
 
 /** Machine-readable report: same content as the human report, unlimited, with root-relative paths. */
 export function renderJsonReport(analysis: Analysis, root: string): string {
@@ -20,14 +21,22 @@ export function renderJsonReport(analysis: Analysis, root: string): string {
   });
 }
 
-export function renderJsonExplanation(explanation: Explanation, root: string): string {
+export function renderJsonInspection(inspection: Inspection, root: string): string {
   const relative = relativeTo(root);
+  const dependency = (item: Dependency) => ({ ...item, file: relative(item.file) });
   return stringify({
-    file: relative(explanation.file),
-    typescript: explanation.typescript,
-    javascriptImports: explanation.typescript
-      ? explanation.javascriptImports.map((item) => ({ ...item, file: relative(item.file) }))
-      : [],
+    file: relative(inspection.file),
+    language: languageOf(inspection.file),
+    ready: inspection.ready,
+    imports: inspection.imports.map((item) => ({ ...dependency(item), language: languageOf(item.file) })),
+    plan: inspection.plan.map((step) => ({
+      files: step.files.map(relative),
+      cycle: step.cycle,
+      ready: step.imports.length === 0,
+      target: step.files.includes(inspection.file),
+      imports: step.imports.map(dependency),
+    })),
+    manualReview: inspection.manualReview.map((item) => ({ ...item, file: relative(item.file) })),
   });
 }
 

@@ -13,7 +13,7 @@ npx ts-analyze src/index.js
 npx ts-analyze src                      # every source file below src/
 npx ts-analyze --entry src/index.js --entry src/admin.js
 npx ts-analyze --config tsconfig.app.json src
-npx ts-analyze why src/greeting.ts      # which JavaScript a TypeScript file imports
+npx ts-analyze inspect src/pages/Show.jsx   # what to migrate before one file, in order
 ```
 
 ```
@@ -55,7 +55,30 @@ Summary
 | `--dry-run` | Report mixed branches without failing. |
 | `--report-limit <n>` / `--no-report-limit` | Items per list in the human report (default 10). |
 
-Exit codes: `0` no mixed branches (or `--dry-run`), `1` mixed branches found, `2` invalid usage or configuration.
+Exit codes: `0` no mixed branches (or `--dry-run`, or `inspect`), `1` mixed branches found, `2` invalid usage or configuration.
+
+### Inspecting one file
+
+`ts-analyze inspect <file>` answers "what do I migrate before this file, and why?". It lists the file's direct imports (resolved through tsconfig `paths`, with their language) and the JavaScript files to migrate first, in order. Each file comes with the JavaScript it still imports. TypeScript imports end the walk because they are already migrated. For a TypeScript file it lists the JavaScript to migrate to fix its mixed branch. The output is never truncated, and `--format json` gives the same plan for scripts and agents. `why` is an alias.
+
+```
+src/pages/Show.jsx  [JavaScript]
+
+Direct imports (2)
+
+  1. src/components/Button.tsx  [TypeScript, line 1]
+  2. src/layouts/Layout.jsx  [JavaScript, line 2]
+
+Migration order (3)
+
+  1. src/hooks/useEcho.js  [ready]
+  2. src/layouts/Layout.jsx
+       imports src/hooks/useEcho.js
+  3. src/pages/Show.jsx  [this file]
+       imports src/layouts/Layout.jsx
+
+→ Migrate 2 files first, starting with src/hooks/useEcho.js, then src/pages/Show.jsx.
+```
 
 ### How the priority list is ordered
 
