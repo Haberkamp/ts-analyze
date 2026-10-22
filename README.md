@@ -115,7 +115,7 @@ npm run e18e          # e18e dependency and packaging analysis
 npm run build
 ```
 
-CI runs all of these on every pull request, plus commitlint on the PR's commits and title. Commits follow [Conventional Commits](https://www.conventionalcommits.org) without a scope (`feat: …`, not `feat(cli): …`). release-please turns them into release PRs; merging one tags the release and publishes to npm.
+CI runs all of these on every pull request, plus commitlint on the PR's commits and title. Commits follow [Conventional Commits](https://www.conventionalcommits.org) without a scope (`feat: …`, not `feat(cli): …`). release-please turns them into release PRs; merging one tags the release and stages it on npm, where a maintainer approves it with 2FA under **Staged Packages**.
 
 The code follows a hexagonal layout:
 
