@@ -2,8 +2,8 @@ import { parseArgs } from "node:util";
 
 import { UsageError } from "../../application/ports.js";
 import { createApplication } from "../../composition-root.js";
-import { renderExplanation, renderHumanReport } from "./human-report.js";
-import { renderJsonExplanation, renderJsonReport } from "./json-report.js";
+import { renderHumanReport, renderInspection } from "./human-report.js";
+import { renderJsonInspection, renderJsonReport } from "./json-report.js";
 
 export interface CliEnvironment {
   readonly cwd: string;
@@ -22,27 +22,52 @@ const DEFAULT_REPORT_LIMIT = 10;
 
 export const HELP = `Usage:
   ts-analyze [options] <entry...>
-  ts-analyze [options] why <file.ts>
+  ts-analyze inspect [options] <file>
 
-Lists the JavaScript files of a project in the order to migrate them to TypeScript,
-shows circular dependencies, and fails when a TypeScript file imports JavaScript
-(a mixed branch).
+Plans a JavaScript to TypeScript migration. Migrate leaves first: a TypeScript
+file that imports JavaScript (a "mixed branch") is an error.
 
-Entries are files, extensionless paths, or directories (node_modules and hidden
-folders are skipped).
+Commands:
+  ts-analyze <entry...>
+    Project report: every JavaScript file reachable from the entries, in the
+    order to migrate them, plus circular dependencies, mixed branches and a
+    progress summary. Exits with 1 when there is a mixed branch.
+    Entries are files, extensionless paths, or directories (node_modules and
+    hidden folders are skipped).
+
+  ts-analyze inspect <file>
+    Plan for one file. Lists its direct imports (resolved through tsconfig
+    paths, with their language) and every JavaScript file to migrate before it,
+    in order, each with the JavaScript it still imports. Migrating in this
+    order never creates a mixed branch. TypeScript imports end the walk: they
+    are already migrated. For a TypeScript file, it lists the JavaScript to
+    migrate to fix its mixed branch. Never truncated; exits with 0.
+    "why" is an alias.
 
 Options:
   --entry <path>        Entry point. May be repeated; positional entries work too.
   -c, --config <file>   tsconfig.json or jsconfig.json. Defaults to the nearest one.
   --tsconfig <file>     Alias for --config.
-  --format <format>     human (default) or json.
+  --format <format>     human (default) or json. JSON has the same content, untruncated.
   --dry-run             Report mixed branches without failing.
-  --report-limit <n>    Items shown per list in the human report. Defaults to ${DEFAULT_REPORT_LIMIT}.
-  --no-report-limit     Show every item.
+  --report-limit <n>    Items per list in the project report. Defaults to ${DEFAULT_REPORT_LIMIT}.
+  --no-report-limit     Show every item in the project report.
   -h, --help            Show this help.
 
+Tags:
+  [ready]                     imports no JavaScript, so it can be migrated now
+  [cycle: migrate together]   files in an import cycle; migrate them in one go
+  [fixes mixed branch]        must be migrated before every mixed branch is fixed
+  [this file]                 the file passed to inspect
+
+Examples:
+  ts-analyze src
+  ts-analyze inspect src/pages/Show.jsx
+  ts-analyze inspect --format json src/pages/Show.jsx
+  ts-analyze --config tsconfig.app.json --entry src/main.ts --entry src/admin.ts
+
 Exit codes:
-  0  no mixed branches (or --dry-run)
+  0  no mixed branches (or --dry-run, or inspect)
   1  a TypeScript file imports JavaScript
   2  invalid usage or configuration
 `;
@@ -65,17 +90,17 @@ function execute(argv: readonly string[], environment: CliEnvironment): CliResul
   }
 
   const [command, ...rest] = options.positionals;
-  if (command === "why") {
+  if (command === "inspect" || command === "why") {
     const [file] = rest;
     if (file === undefined) {
-      throw new UsageError("Provide a TypeScript file to explain: ts-analyze why <file.ts>");
+      throw new UsageError("Provide a file to inspect: ts-analyze inspect <file>");
     }
     const application = createApplication(environment.cwd, options.config);
-    const explanation = application.explain(file);
+    const inspection = application.inspect(file);
     const stdout =
       options.format === "json"
-        ? renderJsonExplanation(explanation, application.root)
-        : renderExplanation(explanation, { root: application.root, color: environment.color });
+        ? renderJsonInspection(inspection, application.root)
+        : renderInspection(inspection, { root: application.root, color: environment.color });
     return { exitCode: 0, stdout, stderr: "" };
   }
 

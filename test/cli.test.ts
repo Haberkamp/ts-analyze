@@ -43,6 +43,8 @@ describe("human report", () => {
         "",
         '✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.',
         "",
+        "Tip: run `ts-analyze inspect <file>` to see what to migrate before a specific file, in order.",
+        "",
       ].join("\n"),
     );
   });
@@ -68,6 +70,8 @@ describe("human report", () => {
         "  Total     5 files",
         "",
         "✔ No mixed branches: no TypeScript file imports JavaScript.",
+        "",
+        "Tip: run `ts-analyze inspect <file>` to see what to migrate before a specific file, in order.",
         "",
       ].join("\n"),
     );
@@ -163,6 +167,8 @@ describe("exit status", () => {
     { name: "missing config", args: ["--config", "nope.json", "src"], message: "Config file not found: nope.json" },
     { name: "bad report limit", args: ["--report-limit", "-1", "src"], message: "--report-limit" },
     { name: "bad format", args: ["--format", "xml", "src"], message: "--format" },
+    { name: "inspect without a file", args: ["inspect"], message: "Provide a file to inspect" },
+    { name: "inspect a directory", args: ["inspect", "src"], message: "inspect expects a single source file" },
   ])("exits with 2 for usage errors: $name", ({ args, message }) => {
     const result = run(copyFixture("basic-esm"), args);
 
@@ -187,6 +193,7 @@ describe("exit status", () => {
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toMatch(/^Usage:/);
     expect(result.stdout).toContain("--dry-run");
+    expect(result.stdout).toContain("ts-analyze inspect [options] <file>");
   });
 });
 
@@ -259,32 +266,91 @@ describe("options", () => {
   });
 });
 
-describe("why", () => {
-  it("explains which JavaScript files a TypeScript file imports", () => {
-    const result = run(copyFixture("typescript-middle-js-leaf"), ["why", "src/greeting.ts"]);
+describe("inspect", () => {
+  it("lists what to migrate before a JavaScript file, stopping at TypeScript imports", () => {
+    const result = run(copyFixture("transitive-mixed"), ["inspect", "src/main.js"]);
 
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toBe(
       [
-        "src/greeting.ts imports JavaScript:",
+        "src/main.js  [JavaScript]",
         "",
-        "  1. src/punctuation.js (line 1)",
+        "Direct imports (2)",
         "",
-        "Migrate these files to TypeScript to fix this mixed branch.",
+        "  1. src/app.ts  [TypeScript, line 1]",
+        "  2. src/helpers/format.js  [JavaScript, line 2]",
+        "",
+        "Migration order (2)",
+        "",
+        "  1. src/helpers/format.js  [ready]",
+        "  2. src/main.js  [this file]",
+        "       imports src/helpers/format.js",
+        "",
+        "→ Migrate 1 file first, starting with src/helpers/format.js, then src/main.js.",
         "",
       ].join("\n"),
     );
   });
 
-  it("says when a TypeScript file imports no JavaScript", () => {
-    const result = run(copyFixture("typescript-only"), ["why", "src/report.ts"]);
+  it("lists the JavaScript to migrate to fix a TypeScript file's mixed branch, as JSON", () => {
+    const result = run(copyFixture("transitive-mixed"), ["inspect", "--format", "json", "src/service.ts"]);
 
-    expect(result.stdout).toBe("src/report.ts imports no JavaScript.\n");
+    expect(result.exitCode).toBe(0);
+    expect(JSON.parse(result.stdout)).toEqual({
+      file: "src/service.ts",
+      language: "typescript",
+      ready: false,
+      imports: [{ file: "src/legacy/db.js", specifier: "./legacy/db.js", line: 1, language: "javascript" }],
+      plan: [
+        { files: ["src/legacy/conn.js"], cycle: false, ready: true, target: false, imports: [] },
+        {
+          files: ["src/legacy/db.js"],
+          cycle: false,
+          ready: false,
+          target: false,
+          imports: [{ file: "src/legacy/conn.js", specifier: "./conn.js", line: 1 }],
+        },
+      ],
+      manualReview: [],
+    });
   });
 
-  it("rejects files that are not TypeScript", () => {
-    const result = run(copyFixture("typescript-middle-js-leaf"), ["why", "src/index.js"]);
+  it("says when a file has to be migrated together with its import cycle", () => {
+    const result = run(copyFixture("cycle"), ["inspect", "src/a.js"]);
 
-    expect(result.stdout).toBe("src/index.js is not a TypeScript file.\n");
+    expect(result.stdout).toBe(
+      [
+        "src/a.js  [JavaScript]",
+        "",
+        "Direct imports (1)",
+        "",
+        "  1. src/b.js  [JavaScript, line 1]",
+        "",
+        "Migration order (1)",
+        "",
+        "  1. src/a.js, src/b.js  [cycle: migrate together, ready, this file]",
+        "",
+        "→ Migrate src/a.js together with 1 other file in its import cycle.",
+        "",
+      ].join("\n"),
+    );
+  });
+
+  it("says when a file can be migrated now", () => {
+    const leaf = run(copyFixture("basic-esm"), ["inspect", "src/utils/date.js"]);
+    const importsOnlyTypeScript = run(copyFixture("mixed-cycle"), ["inspect", "src/a.js"]);
+    const typescript = run(copyFixture("typescript-only"), ["inspect", "src/report.ts"]);
+
+    expect(leaf.stdout).toContain("Direct imports (0)\n\n  None.\n");
+    expect(leaf.stdout).toContain("✔ src/utils/date.js can be migrated now: it imports no JavaScript.\n");
+    expect(importsOnlyTypeScript.stdout).toContain("✔ src/a.js can be migrated now: it imports no JavaScript.\n");
+    expect(typescript.stdout).not.toContain("Migration order");
+    expect(typescript.stdout).toContain("✔ src/report.ts imports no JavaScript.\n");
+  });
+
+  it("keeps why as an alias", () => {
+    const root = copyFixture("typescript-middle-js-leaf");
+
+    expect(run(root, ["why", "src/greeting.ts"]).stdout).toBe(run(root, ["inspect", "src/greeting.ts"]).stdout);
   });
 });

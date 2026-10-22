@@ -1,8 +1,9 @@
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
-import type { Explanation } from "../../application/analyze-project.js";
-import type { Analysis, Cycle, PriorityStep } from "../../domain/model.js";
+import type { Inspection } from "../../application/analyze-project.js";
+import type { Analysis, Cycle, ManualReviewItem, PriorityStep } from "../../domain/model.js";
+import { languageOf } from "../../domain/source-file.js";
 
 export interface HumanReportOptions {
   readonly root: string;
@@ -78,9 +79,7 @@ export function renderHumanReport(analysis: Analysis, options: HumanReportOption
   }
 
   if (analysis.manualReview.length > 0) {
-    section("Manual review", analysis.manualReview, (item, marker) => [
-      `  ${marker}${style.file(item.file)}:${item.line}  ${item.detail.replace(/\s+/g, " ")}  ${style.dim(`[${item.reason}]`)}`,
-    ]);
+    section("Manual review", analysis.manualReview, (item, marker) => [formatManualReview(item, marker, style)]);
     lines.push("");
   }
 
@@ -97,31 +96,94 @@ export function renderHumanReport(analysis: Analysis, options: HumanReportOption
   );
 
   lines.push(verdict(analysis.mixedBranches.length, options.dryRun, style), "");
+  if (analysis.priority.length > 0) {
+    lines.push(
+      style.dim("Tip: run `ts-analyze inspect <file>` to see what to migrate before a specific file, in order."),
+      "",
+    );
+  }
   return lines.join("\n");
 }
 
-export function renderExplanation(
-  explanation: Explanation,
+export function renderInspection(
+  inspection: Inspection,
   options: { readonly root: string; readonly color: boolean },
 ): string {
   const style = createStyle(options);
-  const file = style.file(explanation.file);
-  if (!explanation.typescript) {
-    return `${file} is not a TypeScript file.\n`;
+  const { file, imports, plan } = inspection;
+  const lines = [`${style.bold(style.file(file))}${tagList([languageName(file)], style)}`, ""];
+
+  lines.push(style.bold(`Direct imports (${imports.length})`), "");
+  imports.forEach((dependency, index) => {
+    const name = languageOf(dependency.file) === "javascript" ? style.yellow(style.file(dependency.file)) : style.file(dependency.file);
+    lines.push(`  ${index + 1}. ${name}${tagList([`${languageName(dependency.file)}, line ${dependency.line}`], style)}`);
+  });
+  if (imports.length === 0) {
+    lines.push("  None.");
   }
-  if (explanation.javascriptImports.length === 0) {
-    return `${file} imports no JavaScript.\n`;
+  lines.push("");
+
+  if (plan.length > 0) {
+    lines.push(style.bold(`Migration order (${plan.length})`), "");
+    plan.forEach((step, index) => {
+      const marker = `${index + 1}. `;
+      const tags = [
+        ...(step.cycle ? ["cycle: migrate together"] : []),
+        ...(step.imports.length === 0 ? ["ready"] : []),
+        ...(step.files.includes(file) ? ["this file"] : []),
+      ];
+      lines.push(
+        `  ${marker}${step.files.map(style.file).join(", ")}${tagList(tags, style)}`,
+        ...step.imports.map(
+          (dependency) => `${" ".repeat(4 + marker.length)}${style.dim("imports")} ${style.file(dependency.file)}`,
+        ),
+      );
+    });
+    lines.push("");
   }
-  return [
-    `${file} imports JavaScript:`,
-    "",
-    ...explanation.javascriptImports.map(
-      (dependency, index) => `  ${index + 1}. ${style.file(dependency.file)} ${style.dim(`(line ${dependency.line})`)}`,
-    ),
-    "",
-    "Migrate these files to TypeScript to fix this mixed branch.",
-    "",
-  ].join("\n");
+
+  if (inspection.manualReview.length > 0) {
+    lines.push(style.bold(`Manual review (${inspection.manualReview.length})`), "");
+    inspection.manualReview.forEach((item, index) => lines.push(formatManualReview(item, `${index + 1}. `, style)));
+    lines.push("");
+  }
+
+  lines.push(inspectionVerdict(inspection, style), "");
+  return lines.join("\n");
+}
+
+function inspectionVerdict({ file, plan }: Inspection, style: Style): string {
+  const name = style.file(file);
+  const count = (value: number): string => `${value} ${value === 1 ? "file" : "files"}`;
+  const first = style.file(plan[0]?.files[0] ?? "");
+  if (languageOf(file) === "typescript") {
+    if (plan.length === 0) {
+      return style.green(`✔ ${name} imports no JavaScript.`);
+    }
+    const total = plan.reduce((sum, step) => sum + step.files.length, 0);
+    return `${style.red(`✖ ${name} imports JavaScript.`)} Migrate the ${count(total)} above in order, starting with ${first}.`;
+  }
+  const before = plan.slice(0, -1).reduce((sum, step) => sum + step.files.length, 0);
+  const together = (plan.at(-1)?.files.length ?? 1) - 1;
+  const cycle = together > 0 ? ` together with ${together} other ${together === 1 ? "file" : "files"} in its import cycle` : "";
+  if (before === 0) {
+    return together === 0
+      ? style.green(`✔ ${name} can be migrated now: it imports no JavaScript.`)
+      : `${style.bold("→")} Migrate ${name}${cycle}.`;
+  }
+  return `${style.bold("→")} Migrate ${count(before)} first, starting with ${first}, then ${name}${cycle}.`;
+}
+
+function languageName(file: string): string {
+  return languageOf(file) === "typescript" ? "TypeScript" : "JavaScript";
+}
+
+function tagList(tags: readonly string[], style: Style): string {
+  return tags.length === 0 ? "" : `  ${style.dim(`[${tags.join(", ")}]`)}`;
+}
+
+function formatManualReview(item: ManualReviewItem, marker: string, style: Style): string {
+  return `  ${marker}${style.file(item.file)}:${item.line}  ${item.detail.replace(/\s+/g, " ")}  ${style.dim(`[${item.reason}]`)}`;
 }
 
 function formatTags(step: PriorityStep, style: Style): string {
@@ -130,7 +192,7 @@ function formatTags(step: PriorityStep, style: Style): string {
     ...(step.ready ? ["ready"] : []),
     ...(step.fixesMixedBranch ? ["fixes mixed branch"] : []),
   ];
-  return tags.length === 0 ? "" : `  ${style.dim(`[${tags.join(", ")}]`)}`;
+  return tagList(tags, style);
 }
 
 /**
