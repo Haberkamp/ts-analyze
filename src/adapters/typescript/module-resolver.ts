@@ -7,6 +7,9 @@ import type { ImportReference } from "../../domain/model.js";
 import { isDeclarationFile, languageOf } from "../../domain/source-file.js";
 import type { TypeScriptProject } from "./project-config.js";
 
+const DECLARATION = /^(.*)\.d\.([cm]?)ts$/;
+const PATH_SEPARATOR = /[\\/]/;
+
 /**
  * Resolves imports the way TypeScript does for the project, then retries with permissive
  * bundler rules: a migration analysis should rather follow an import that a strict
@@ -112,7 +115,7 @@ function classify(resolved: ts.ResolvedModuleFull): Resolution {
 }
 
 function implementationOf(declaration: string): string | undefined {
-  const match = /^(.*)\.d\.([cm]?)ts$/.exec(declaration);
+  const match = DECLARATION.exec(declaration);
   if (match === null) {
     return undefined;
   }
@@ -136,7 +139,7 @@ function matchesPathAlias(specifier: string, paths: ts.MapLike<string[]> | undef
 }
 
 function isInsideNodeModules(file: string): boolean {
-  return file.split(/[\\/]/).includes("node_modules");
+  return file.split(PATH_SEPARATOR).includes("node_modules");
 }
 
 function isFile(file: string): boolean {

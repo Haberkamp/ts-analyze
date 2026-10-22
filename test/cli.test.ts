@@ -191,7 +191,7 @@ describe("exit status", () => {
     const result = run(copyFixture("basic-esm"), ["--help"]);
 
     expect(result.exitCode).toBe(0);
-    expect(result.stdout).toMatch(/^Usage:/);
+    expect(result.stdout.startsWith("Usage:")).toBe(true);
     expect(result.stdout).toContain("--dry-run");
     expect(result.stdout).toContain("ts-analyze inspect [options] <file>");
   });
