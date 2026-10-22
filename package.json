@@ -23,7 +23,7 @@
     "format": "oxfmt",
     "format:check": "oxfmt --check",
     "knip": "knip",
-    "e18e": "e18e-cli analyze --log-level error",
+    "e18e": "npm run build && e18e-cli analyze --log-level error",
     "commitlint": "commitlint"
   },
   "dependencies": {
