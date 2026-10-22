@@ -15,7 +15,6 @@ const CONFIG_NAMES = ["tsconfig.json", "jsconfig.json"];
 const FILE_NOT_FOUND = 6053;
 
 const DEFAULT_OPTIONS: ts.CompilerOptions = {
-  allowJs: true,
   module: ts.ModuleKind.Preserve,
   moduleResolution: ts.ModuleResolutionKind.Bundler,
 };
@@ -74,7 +73,7 @@ function parseWithReferences(rootConfig: string): ParsedProject[] {
     seen.add(configFile);
     const parsed = parseConfig(configFile);
     projects.push({
-      options: { ...parsed.options, allowJs: true },
+      options: parsed.options,
       files: new Set(parsed.fileNames.map((file) => path.resolve(file))),
     });
     for (const reference of parsed.projectReferences ?? []) {
@@ -89,12 +88,11 @@ function parseConfig(configFile: string): ts.ParsedCommandLine {
   if (read.error) {
     throw new UsageError(`Invalid config ${configFile}: ${formatDiagnostic(read.error)}`);
   }
-  const existingOptions = path.basename(configFile) === "jsconfig.json" ? { allowJs: true } : undefined;
   const parsed = ts.parseJsonConfigFileContent(
     read.config,
     ts.sys,
     path.dirname(configFile),
-    existingOptions,
+    undefined,
     configFile,
   );
   // Only a missing file (e.g. an unresolvable "extends") changes resolution; option-level
