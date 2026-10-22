@@ -35,6 +35,12 @@ describe("human report", () => {
         "",
         "  1. src/index.js:5  import(name)  [non-literal dynamic import]",
         "",
+        "Summary",
+        "",
+        "  Progress  20%",
+        "  Migrated  1 file",
+        "  Total     5 files",
+        "",
         '✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.',
         "",
       ].join("\n"),
@@ -55,6 +61,12 @@ describe("human report", () => {
         "  4. src/services/api.js",
         "  5. src/index.js",
         "",
+        "Summary",
+        "",
+        "  Progress  0%",
+        "  Migrated  0 files",
+        "  Total     5 files",
+        "",
         "✔ No mixed branches: no TypeScript file imports JavaScript.",
         "",
       ].join("\n"),
@@ -71,14 +83,23 @@ describe("human report", () => {
         "",
         "  Nothing to migrate: every reachable file is TypeScript.",
         "",
+        "Summary",
+        "",
+        "  Progress  100%",
+        "  Migrated  5 files",
+        "  Total     5 files",
+        "",
         "✔ No mixed branches: no TypeScript file imports JavaScript.",
         "",
       ].join("\n"),
     );
   });
 
-  it("pluralizes the failure summary", () => {
+  it("pluralizes the failure summary and rounds progress down", () => {
     const result = run(copyFixture("transitive-mixed"), ["src/main.js"]);
+
+    // 2 of 7 files are TypeScript: 28.57% shows as 28%, never rounded up.
+    expect(result.stdout).toContain("  Progress  28%\n  Migrated  2 files\n  Total     7 files\n");
 
     expect(result.stdout).toContain(
       '✖ 2 TypeScript files import JavaScript. Migrate the files marked "fixes mixed branch" first.',

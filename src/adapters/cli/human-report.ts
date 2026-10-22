@@ -84,6 +84,18 @@ export function renderHumanReport(analysis: Analysis, options: HumanReportOption
     lines.push("");
   }
 
+  const { files, typescript } = analysis.summary;
+  // Floor so 100% only appears once every file is migrated.
+  const progress = files === 0 ? 100 : Math.floor((typescript / files) * 100);
+  lines.push(
+    style.bold("Summary"),
+    "",
+    `  ${style.dim("Progress")}  ${progress}%`,
+    `  ${style.dim("Migrated")}  ${typescript} ${typescript === 1 ? "file" : "files"}`,
+    `  ${style.dim("Total   ")}  ${files} ${files === 1 ? "file" : "files"}`,
+    "",
+  );
+
   lines.push(verdict(analysis.mixedBranches.length, options.dryRun, style), "");
   return lines.join("\n");
 }

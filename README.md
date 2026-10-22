@@ -38,6 +38,12 @@ Manual review (1)
 
   1. src/index.js:5  import(name)  [non-literal dynamic import]
 
+Summary
+
+  Progress  20%
+  Migrated  1 file
+  Total     5 files
+
 ✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
 ```
 

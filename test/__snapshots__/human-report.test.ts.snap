@@ -12,6 +12,12 @@ Mixed branches: TypeScript importing JavaScript (1)
   1. src/index.ts
        imports src/legacy.js  [line 1]
 
+Summary
+
+  Progress  50%
+  Migrated  1 file
+  Total     2 files
+
 ✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
 "
 `;
@@ -23,6 +29,12 @@ Migration priority (2)
 
   1. src/utils/math.js  [ready]
   2. src/index.js
+
+Summary
+
+  Progress  0%
+  Migrated  0 files
+  Total     2 files
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
 "
@@ -38,6 +50,12 @@ Migration priority (5)
   3. src/components/Button.js
   4. src/services/api.js
   5. src/index.js
+
+Summary
+
+  Progress  0%
+  Migrated  0 files
+  Total     5 files
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
 "
@@ -57,6 +75,12 @@ Mixed branches: TypeScript importing JavaScript (1)
        imports src/utils/index.js  [line 1]
        imports src/format.js  [line 2]
 
+Summary
+
+  Progress  33%
+  Migrated  1 file
+  Total     3 files
+
 ✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
 "
 `;
@@ -73,6 +97,12 @@ Migration priority (6)
   5. src/in-template.js  [ready]
   6. src/index.js
 
+Summary
+
+  Progress  0%
+  Migrated  0 files
+  Total     6 files
+
 ✔ No mixed branches: no TypeScript file imports JavaScript.
 "
 `;
@@ -85,6 +115,12 @@ Migration priority (3)
   1. src/text.js  [ready]
   2. src/message.js
   3. src/index.js
+
+Summary
+
+  Progress  0%
+  Migrated  0 files
+  Total     3 files
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
 "
@@ -106,6 +142,12 @@ Manual review (1)
 
   1. src/index.js:5  require(name)  [non-literal require]
 
+Summary
+
+  Progress  0%
+  Migrated  0 files
+  Total     6 files
+
 ✔ No mixed branches: no TypeScript file imports JavaScript.
 "
 `;
@@ -119,6 +161,12 @@ Migration priority (4)
   2. src/dep.mjs  [ready]
   3. src/index.mjs
   4. src/legacy.cjs
+
+Summary
+
+  Progress  0%
+  Migrated  0 files
+  Total     4 files
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
 "
@@ -137,6 +185,12 @@ Circular dependencies (1)
   1. ┌─▶ src/a.js
      │   ↓
      └── src/b.js
+
+Summary
+
+  Progress  0%
+  Migrated  0 files
+  Total     3 files
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
 "
@@ -161,6 +215,12 @@ Circular dependencies (2)
 
   2. src/self.js  [imports itself]
 
+Summary
+
+  Progress  0%
+  Migrated  0 files
+  Total     5 files
+
 ✔ No mixed branches: no TypeScript file imports JavaScript.
 "
 `;
@@ -171,6 +231,12 @@ exports[`human report snapshots > declaration-only 1`] = `
 Migration priority (0)
 
   Nothing to migrate: every reachable file is TypeScript.
+
+Summary
+
+  Progress  100%
+  Migrated  1 file
+  Total     1 file
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
 "
@@ -184,6 +250,12 @@ Migration priority (3)
   1. src/lib/helper.js  [ready]
   2. src/lib/standalone.js  [ready]
   3. src/index.js
+
+Summary
+
+  Progress  0%
+  Migrated  0 files
+  Total     3 files
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
 "
@@ -203,6 +275,12 @@ Mixed branches: TypeScript importing JavaScript (1)
        imports src/legacy.js  [line 1]
        imports src/config.mjs  [line 2]
 
+Summary
+
+  Progress  33%
+  Migrated  1 file
+  Total     3 files
+
 ✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
 "
 `;
@@ -219,6 +297,12 @@ Manual review (1)
 
   1. src/index.js:3  import(\`./\${name}.js\`)  [non-literal dynamic import]
 
+Summary
+
+  Progress  0%
+  Migrated  0 files
+  Total     2 files
+
 ✔ No mixed branches: no TypeScript file imports JavaScript.
 "
 `;
@@ -229,6 +313,12 @@ exports[`human report snapshots > external-packages 1`] = `
 Migration priority (0)
 
   Nothing to migrate: every reachable file is TypeScript.
+
+Summary
+
+  Progress  100%
+  Migrated  1 file
+  Total     1 file
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
 "
@@ -241,6 +331,12 @@ Migration priority (2)
 
   1. src/lib/math.js  [ready]
   2. src/index.js
+
+Summary
+
+  Progress  0%
+  Migrated  0 files
+  Total     2 files
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
 "
@@ -256,6 +352,12 @@ Migration priority (1)
 Manual review (1)
 
   1. src/index.js:4  ./missing.css  [unresolved import]
+
+Summary
+
+  Progress  0%
+  Migrated  0 files
+  Total     1 file
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
 "
@@ -274,6 +376,12 @@ Mixed branches: TypeScript importing JavaScript (1)
 
   1. src/Header.tsx
        imports src/Logo.jsx  [line 1]
+
+Summary
+
+  Progress  25%
+  Migrated  1 file
+  Total     4 files
 
 ✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
 "
@@ -298,6 +406,12 @@ Mixed branches: TypeScript importing JavaScript (1)
   1. src/b.ts
        imports src/a.js  [line 1]
 
+Summary
+
+  Progress  33%
+  Migrated  1 file
+  Total     3 files
+
 ✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
 "
 `;
@@ -318,6 +432,12 @@ Mixed branches: TypeScript importing JavaScript (2)
   2. src/esm.mts
        imports src/leaf.mjs  [line 1]
 
+Summary
+
+  Progress  40%
+  Migrated  2 files
+  Total     5 files
+
 ✖ 2 TypeScript files import JavaScript. Migrate the files marked "fixes mixed branch" first.
 "
 `;
@@ -331,6 +451,12 @@ Migration priority (4)
   2. src/components/Button.js  [ready]
   3. src/pages/about.js
   4. src/pages/home.js
+
+Summary
+
+  Progress  0%
+  Migrated  0 files
+  Total     4 files
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
 "
@@ -348,6 +474,12 @@ Migration priority (6)
   5. src/pages/blog/post.js
   6. src/pages/home.js
 
+Summary
+
+  Progress  0%
+  Migrated  0 files
+  Total     6 files
+
 ✔ No mixed branches: no TypeScript file imports JavaScript.
 "
 `;
@@ -360,6 +492,12 @@ Migration priority (2)
   1. src/util.js  [ready]
   2. src/index.js
 
+Summary
+
+  Progress  0%
+  Migrated  0 files
+  Total     2 files
+
 ✔ No mixed branches: no TypeScript file imports JavaScript.
 "
 `;
@@ -371,6 +509,12 @@ Migration priority (2)
 
   1. src/lib/math.js  [ready]
   2. src/index.js
+
+Summary
+
+  Progress  0%
+  Migrated  0 files
+  Total     2 files
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
 "
@@ -388,6 +532,12 @@ Manual review (1)
 
   1. src/index.js:2  @utils/missing  [unresolved import]
 
+Summary
+
+  Progress  0%
+  Migrated  0 files
+  Total     2 files
+
 ✔ No mixed branches: no TypeScript file imports JavaScript.
 "
 `;
@@ -402,6 +552,12 @@ Migration priority (5)
   3. src/feature.js
   4. src/barrel.js
   5. src/index.js
+
+Summary
+
+  Progress  0%
+  Migrated  0 files
+  Total     5 files
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
 "
@@ -431,6 +587,12 @@ Manual review (1)
 
   1. src/index.js:5  import(name)  [non-literal dynamic import]
 
+Summary
+
+  Progress  20%
+  Migrated  1 file
+  Total     5 files
+
 ✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
 "
 `;
@@ -446,6 +608,12 @@ Mixed branches: TypeScript importing JavaScript (1)
 
   1. src/main.ts
        imports src/legacy.js  [line 1]
+
+Summary
+
+  Progress  66%
+  Migrated  2 files
+  Total     3 files
 
 ✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
 "
@@ -469,6 +637,12 @@ Mixed branches: TypeScript importing JavaScript (2)
   2. src/service.ts
        imports src/legacy/db.js  [line 1]
 
+Summary
+
+  Progress  28%
+  Migrated  2 files
+  Total     7 files
+
 ✖ 2 TypeScript files import JavaScript. Migrate the files marked "fixes mixed branch" first.
 "
 `;
@@ -484,6 +658,12 @@ Mixed branches: TypeScript importing JavaScript (1)
 
   1. src/util.ts
        imports src/legacy.js  [line 1]
+
+Summary
+
+  Progress  66%
+  Migrated  2 files
+  Total     3 files
 
 ✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
 "
@@ -501,6 +681,12 @@ Mixed branches: TypeScript importing JavaScript (1)
   1. src/index.ts
        imports src/legacy.js  [line 1]
 
+Summary
+
+  Progress  50%
+  Migrated  1 file
+  Total     2 files
+
 ✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
 "
 `;
@@ -512,6 +698,12 @@ Migration priority (2)
 
   1. src/util.js  [ready]
   2. src/index.js
+
+Summary
+
+  Progress  0%
+  Migrated  0 files
+  Total     2 files
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
 "
@@ -530,6 +722,12 @@ Circular dependencies (1)
      │   ↓
      └── src/b.ts
 
+Summary
+
+  Progress  66%
+  Migrated  2 files
+  Total     3 files
+
 ✔ No mixed branches: no TypeScript file imports JavaScript.
 "
 `;
@@ -541,6 +739,12 @@ Migration priority (2)
 
   1. src/summary.js  [ready]
   2. src/index.js
+
+Summary
+
+  Progress  50%
+  Migrated  2 files
+  Total     4 files
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
 "
@@ -558,6 +762,12 @@ Mixed branches: TypeScript importing JavaScript (1)
 
   1. src/greeting.ts
        imports src/punctuation.js  [line 1]
+
+Summary
+
+  Progress  33%
+  Migrated  1 file
+  Total     3 files
 
 ✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
 "
@@ -581,6 +791,12 @@ Mixed branches: TypeScript importing JavaScript (1)
        imports src/legacy-shapes.js  [line 3]
        imports src/legacy-config.js  [line 4]
 
+Summary
+
+  Progress  20%
+  Migrated  1 file
+  Total     5 files
+
 ✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
 "
 `;
@@ -591,6 +807,12 @@ exports[`human report snapshots > typescript-only 1`] = `
 Migration priority (0)
 
   Nothing to migrate: every reachable file is TypeScript.
+
+Summary
+
+  Progress  100%
+  Migrated  5 files
+  Total     5 files
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
 "
@@ -607,6 +829,12 @@ Migration priority (2)
 Manual review (1)
 
   1. src/index.js:3  ./missing.js  [unresolved import]
+
+Summary
+
+  Progress  0%
+  Migrated  0 files
+  Total     2 files
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
 "
