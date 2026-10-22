@@ -112,12 +112,18 @@ function findMixedBranches(files: string[], graph: ModuleGraph): MixedBranch[] {
     if (languageOf(file) !== "typescript") {
       continue;
     }
-    const seen = new Set<string>();
-    const imports = [...(graph.get(file) ?? [])]
-      .filter((dependency) => languageOf(dependency.file) === "javascript")
-      .sort((left, right) => left.line - right.line || compareText(left.file, right.file))
-      .filter((dependency) => !seen.has(dependency.file) && seen.add(dependency.file));
-    if (imports.length > 0) {
+    // One entry per imported file: its first import.
+    const firstImports = new Map<string, Dependency>();
+    for (const dependency of graph.get(file) ?? []) {
+      const first = firstImports.get(dependency.file);
+      if (languageOf(dependency.file) === "javascript" && (first === undefined || dependency.line < first.line)) {
+        firstImports.set(dependency.file, dependency);
+      }
+    }
+    if (firstImports.size > 0) {
+      const imports = [...firstImports.values()].sort(
+        (left, right) => left.line - right.line || compareText(left.file, right.file),
+      );
       branches.push({ file, imports });
     }
   }
