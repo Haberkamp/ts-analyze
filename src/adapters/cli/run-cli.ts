@@ -20,7 +20,7 @@ export interface CliResult {
 
 const DEFAULT_REPORT_LIMIT = 10;
 
-export const HELP = `Usage:
+const HELP = `Usage:
   ts-analyze [options] <entry...>
   ts-analyze inspect [options] <file>
 

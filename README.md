@@ -47,13 +47,13 @@ Summary
 ✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
 ```
 
-| Option | |
-| --- | --- |
-| `--entry <path>` | Entry point; repeatable. Positional entries work too. Files, extensionless paths, or directories (skips `node_modules` and hidden folders). |
-| `-c, --config <file>` | `tsconfig.json` or `jsconfig.json`. Defaults to the nearest one above the working directory. `--tsconfig` is an alias. |
-| `--format json` | Machine-readable output with the same content. |
-| `--dry-run` | Report mixed branches without failing. |
-| `--report-limit <n>` / `--no-report-limit` | Items per list in the human report (default 10). |
+| Option                                     |                                                                                                                                             |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--entry <path>`                           | Entry point; repeatable. Positional entries work too. Files, extensionless paths, or directories (skips `node_modules` and hidden folders). |
+| `-c, --config <file>`                      | `tsconfig.json` or `jsconfig.json`. Defaults to the nearest one above the working directory. `--tsconfig` is an alias.                      |
+| `--format json`                            | Machine-readable output with the same content.                                                                                              |
+| `--dry-run`                                | Report mixed branches without failing.                                                                                                      |
+| `--report-limit <n>` / `--no-report-limit` | Items per list in the human report (default 10).                                                                                            |
 
 Exit codes: `0` no mixed branches (or `--dry-run`, or `inspect`), `1` mixed branches found, `2` invalid usage or configuration.
 
@@ -106,10 +106,16 @@ Listed for manual review: non-literal `require()` / `import()`, and local import
 
 ```sh
 npm install
-npm test        # integration tests over fixtures/
-npm run check   # typecheck src and tests
+npm test              # integration tests over fixtures/
+npm run check         # typecheck src and tests
+npm run lint          # oxlint: type-aware, typescript-eslint strict rules, e18e rules
+npm run format        # oxfmt (format:check in CI)
+npm run knip          # unused files, exports and dependencies
+npm run e18e          # e18e dependency and packaging analysis
 npm run build
 ```
+
+CI runs all of these on every pull request, plus commitlint on the PR's commits and title. Commits follow [Conventional Commits](https://www.conventionalcommits.org) without a scope (`feat: …`, not `feat(cli): …`). release-please turns them into release PRs; merging one tags the release and publishes to npm.
 
 The code follows a hexagonal layout:
 

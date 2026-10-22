@@ -134,7 +134,7 @@ describe("human report", () => {
     const colored = run(root, ["src/index.js"], { color: true });
     const plain = run(root, ["src/index.js"]);
 
-    expect(colored.stdout).toMatch(/\u001b\[[0-9;]*m/);
+    expect(colored.stdout).toContain("\u001b[1m");
     expect(colored.stdout).toContain(
       `\u001b]8;;${pathToFileURL(path.join(root, "src/greeting.ts")).href}\u0007src/greeting.ts\u001b]8;;\u0007`,
     );
@@ -255,11 +255,7 @@ describe("options", () => {
   it("shows paths relative to an explicit --config and uses its settings", () => {
     const fixture = copyFixture("path-alias");
 
-    const result = run(path.dirname(fixture), [
-      "--config",
-      "path-alias/tsconfig.json",
-      "path-alias/src/index.js",
-    ]);
+    const result = run(path.dirname(fixture), ["--config", "path-alias/tsconfig.json", "path-alias/src/index.js"]);
 
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("  1. src/utils/math.js  [ready]\n  2. src/index.js");

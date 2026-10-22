@@ -93,8 +93,7 @@ function resolutionMode(
     return ts.ModuleKind.ESNext;
   }
   return (
-    ts.getImpliedNodeFormatForFile(fromFile, cache.getPackageJsonInfoCache(), ts.sys, options) ??
-    ts.ModuleKind.ESNext
+    ts.getImpliedNodeFormatForFile(fromFile, cache.getPackageJsonInfoCache(), ts.sys, options) ?? ts.ModuleKind.ESNext
   );
 }
 
