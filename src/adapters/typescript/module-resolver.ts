@@ -27,7 +27,7 @@ export class TypeScriptModuleResolver implements ModuleResolver {
     if (resolved !== undefined) {
       return classify(resolved);
     }
-    if (reference.specifier.startsWith("#")) {
+    if (reference.specifier.startsWith("#") || matchesPathAlias(reference.specifier, options.paths)) {
       return { kind: "missing" };
     }
     if (reference.specifier.startsWith(".") || path.isAbsolute(reference.specifier)) {
@@ -120,6 +120,20 @@ function implementationOf(declaration: string): string | undefined {
   const [, base = "", flavor] = match;
   const extensions = flavor === "m" ? [".mjs"] : flavor === "c" ? [".cjs"] : [".js", ".jsx"];
   return extensions.map((extension) => base + extension).find(isFile);
+}
+
+/** A specifier covered by a tsconfig "paths" pattern is local code, so failing to resolve it is a mistake. */
+function matchesPathAlias(specifier: string, paths: ts.MapLike<string[]> | undefined): boolean {
+  // A catch-all "*" pattern (often used for custom typings) would claim every package.
+  return Object.keys(paths ?? {}).some((pattern) => {
+    if (pattern === "*") {
+      return false;
+    }
+    const [prefix = "", suffix] = pattern.split("*");
+    return suffix === undefined
+      ? specifier === pattern
+      : specifier.length >= prefix.length + suffix.length && specifier.startsWith(prefix) && specifier.endsWith(suffix);
+  });
 }
 
 function isInsideNodeModules(file: string): boolean {
