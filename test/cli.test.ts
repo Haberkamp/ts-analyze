@@ -95,7 +95,8 @@ describe("human report", () => {
         "  1. ┌─▶ src/a.js",
         "     │   ↓",
         "     └── src/b.js",
-        "         [+1 more file in this cycle group]",
+        "         also in this cycle group (1):",
+        "         src/c.js",
         "",
         "  2. src/self.js  [imports itself]",
       ].join("\n"),
@@ -182,6 +183,29 @@ describe("options", () => {
         "",
       ].join("\n"),
     );
+  });
+
+  it("applies --report-limit to the extra files of a cycle group", () => {
+    const root = temporaryDirectory();
+    fs.mkdirSync(path.join(root, "src"));
+    const imports: Record<string, string[]> = { a: ["b"], b: ["a", "c"], c: ["d"], d: ["e"], e: ["a"] };
+    for (const [file, targets] of Object.entries(imports)) {
+      fs.writeFileSync(path.join(root, "src", `${file}.js`), targets.map((t) => `import "./${t}.js";\n`).join(""));
+    }
+
+    const limited = run(root, ["--report-limit", "2", "src"]);
+    const unlimited = run(root, ["--no-report-limit", "src"]);
+
+    expect(limited.stdout).toContain(
+      [
+        "     └── src/b.js",
+        "         also in this cycle group (3):",
+        "         src/c.js",
+        "         src/d.js",
+        "         … 1 more (use --report-limit <n> or --no-report-limit to show more)",
+      ].join("\n"),
+    );
+    expect(unlimited.stdout).toContain("         src/d.js\n         src/e.js\n");
   });
 
   it("limits lists to 10 items by default and can disable the limit", () => {

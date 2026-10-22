@@ -16,19 +16,37 @@ export function renderHumanReport(analysis: Analysis, options: HumanReportOption
   const style = createStyle(options);
   const lines: string[] = [];
 
+  const moreHint = (hidden: number, indent: string): string =>
+    style.dim(`${indent}… ${hidden} more (use --report-limit <n> or --no-report-limit to show more)`);
+  const limit = <T>(items: readonly T[]): readonly T[] =>
+    options.reportLimit === undefined ? items : items.slice(0, options.reportLimit);
+
   const section = <T>(
     title: string,
     items: readonly T[],
     render: (item: T, marker: string, index: number) => string[],
   ): void => {
     lines.push(style.bold(`${title} (${items.length})`), "");
-    const visible = options.reportLimit === undefined ? items : items.slice(0, options.reportLimit);
+    const visible = limit(items);
     visible.forEach((item, index) => lines.push(...render(item, `${index + 1}. `, index)));
     if (visible.length < items.length) {
-      lines.push(
-        style.dim(`  … ${items.length - visible.length} more (use --report-limit <n> or --no-report-limit to show more)`),
-      );
+      lines.push(moreHint(items.length - visible.length, "  "));
     }
+  };
+
+  /** Files of a cycle group that are not on the drawn loop, limited like every other list. */
+  const renderCycleGroupRest = (cycle: Cycle, marker: string): string[] => {
+    const rest = cycle.files.filter((file) => !cycle.path.includes(file));
+    if (rest.length === 0) {
+      return [];
+    }
+    const indent = " ".repeat(6 + marker.length);
+    const visible = limit(rest);
+    return [
+      `${indent}${style.dim(`also in this cycle group (${rest.length}):`)}`,
+      ...visible.map((file) => `${indent}${style.file(file)}`),
+      ...(visible.length < rest.length ? [moreHint(rest.length - visible.length, indent)] : []),
+    ];
   };
 
   section("Migration priority", analysis.priority, (step, marker) => [
@@ -43,6 +61,7 @@ export function renderHumanReport(analysis: Analysis, options: HumanReportOption
     section("Circular dependencies", analysis.cycles, (cycle, marker, index) => [
       ...(index > 0 ? [""] : []),
       ...renderCycle(cycle, marker, style),
+      ...renderCycleGroupRest(cycle, marker),
     ]);
     lines.push("");
   }
@@ -52,7 +71,7 @@ export function renderHumanReport(analysis: Analysis, options: HumanReportOption
       `  ${marker}${style.file(branch.file)}`,
       ...branch.imports.map(
         (dependency) =>
-          `${" ".repeat(4 + marker.length)}imports ${style.yellow(style.file(dependency.file))}  ${style.dim(`[line ${dependency.line}]`)}`,
+          `${" ".repeat(4 + marker.length)}${style.dim("imports")} ${style.yellow(style.file(dependency.file))}  ${style.dim(`[line ${dependency.line}]`)}`,
       ),
     ]);
     lines.push("");
@@ -122,10 +141,6 @@ function renderCycle(cycle: Cycle, marker: string, style: Style): string[] {
     const prefix = position === 0 ? `  ${marker}${style.dim("┌─▶")}` : `${indent}${style.dim(isLast ? "└──" : "│  ")}`;
     return [`${prefix} ${style.file(file)}`, ...(isLast ? [] : [`${indent}${style.dim("│   ↓")}`])];
   });
-  const others = cycle.files.length - files.length;
-  if (others > 0) {
-    lines.push(`${indent}    ${style.dim(`[+${others} more ${others === 1 ? "file" : "files"} in this cycle group]`)}`);
-  }
   return lines;
 }
 
