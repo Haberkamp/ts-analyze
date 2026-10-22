@@ -156,7 +156,8 @@ Circular dependencies (2)
   1. ┌─▶ src/a.js
      │   ↓
      └── src/b.js
-         [+1 more file in this cycle group]
+         also in this cycle group (1):
+         src/c.js
 
   2. src/self.js  [imports itself]
 
