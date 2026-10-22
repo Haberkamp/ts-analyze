@@ -1,0 +1,600 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`human report snapshots > allow-js-disabled 1`] = `
+"exit code 1
+
+Migration priority (1)
+
+  1. src/legacy.js  [ready, fixes mixed branch]
+
+Mixed branches: TypeScript importing JavaScript (1)
+
+  1. src/index.ts
+     imports src/legacy.js (line 1)
+
+✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
+"
+`;
+
+exports[`human report snapshots > base-url 1`] = `
+"exit code 0
+
+Migration priority (2)
+
+  1. src/utils/math.js  [ready]
+  2. src/index.js
+
+✔ No mixed branches: no TypeScript file imports JavaScript.
+"
+`;
+
+exports[`human report snapshots > basic-esm 1`] = `
+"exit code 0
+
+Migration priority (5)
+
+  1. src/utils/date.js  [ready]
+  2. src/utils/math.js  [ready]
+  3. src/components/Button.js
+  4. src/services/api.js
+  5. src/index.js
+
+✔ No mixed branches: no TypeScript file imports JavaScript.
+"
+`;
+
+exports[`human report snapshots > bundler-extensionless 1`] = `
+"exit code 1
+
+Migration priority (2)
+
+  1. src/format.js  [ready, fixes mixed branch]
+  2. src/utils/index.js  [ready, fixes mixed branch]
+
+Mixed branches: TypeScript importing JavaScript (1)
+
+  1. src/index.ts
+     imports src/utils/index.js (line 1)
+     imports src/format.js (line 2)
+
+✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
+"
+`;
+
+exports[`human report snapshots > comments-and-strings 1`] = `
+"exit code 0
+
+Migration priority (6)
+
+  1. src/real.js  [ready]
+  2. src/block-commented.js  [ready]
+  3. src/commented.js  [ready]
+  4. src/in-string.js  [ready]
+  5. src/in-template.js  [ready]
+  6. src/index.js
+
+✔ No mixed branches: no TypeScript file imports JavaScript.
+"
+`;
+
+exports[`human report snapshots > commonjs 1`] = `
+"exit code 0
+
+Migration priority (3)
+
+  1. src/text.js  [ready]
+  2. src/message.js
+  3. src/index.js
+
+✔ No mixed branches: no TypeScript file imports JavaScript.
+"
+`;
+
+exports[`human report snapshots > commonjs-patterns 1`] = `
+"exit code 0
+
+Migration priority (6)
+
+  1. src/direct.js  [ready]
+  2. src/lazy.js  [ready]
+  3. src/reexported.js  [ready]
+  4. src/templated.js  [ready]
+  5. src/resolved-only.js  [ready]
+  6. src/index.js
+
+Manual review (1)
+
+  1. src/index.js:5  non-literal require: require(name)
+
+✔ No mixed branches: no TypeScript file imports JavaScript.
+"
+`;
+
+exports[`human report snapshots > conditional-imports 1`] = `
+"exit code 0
+
+Migration priority (4)
+
+  1. src/dep.cjs  [ready]
+  2. src/dep.mjs  [ready]
+  3. src/index.mjs
+  4. src/legacy.cjs
+
+✔ No mixed branches: no TypeScript file imports JavaScript.
+"
+`;
+
+exports[`human report snapshots > cycle 1`] = `
+"exit code 0
+
+Migration priority (2)
+
+  1. src/a.js, src/b.js  [cycle: migrate together, ready]
+  2. src/index.js
+
+Circular dependencies (1)
+
+  1. src/a.js → src/b.js → src/a.js
+
+✔ No mixed branches: no TypeScript file imports JavaScript.
+"
+`;
+
+exports[`human report snapshots > cycle-shapes 1`] = `
+"exit code 0
+
+Migration priority (3)
+
+  1. src/a.js, src/b.js, src/c.js  [cycle: migrate together, ready]
+  2. src/self.js  [cycle: migrate together, ready]
+  3. src/index.js
+
+Circular dependencies (2)
+
+  1. src/a.js → src/b.js → src/a.js (group also includes src/c.js)
+  2. src/self.js → src/self.js
+
+✔ No mixed branches: no TypeScript file imports JavaScript.
+"
+`;
+
+exports[`human report snapshots > declaration-only 1`] = `
+"exit code 0
+
+Migration priority (0)
+
+  Nothing to migrate: every reachable file is TypeScript.
+
+✔ No mixed branches: no TypeScript file imports JavaScript.
+"
+`;
+
+exports[`human report snapshots > directory-entry 1`] = `
+"exit code 0
+
+Migration priority (3)
+
+  1. src/lib/helper.js  [ready]
+  2. src/lib/standalone.js  [ready]
+  3. src/index.js
+
+✔ No mixed branches: no TypeScript file imports JavaScript.
+"
+`;
+
+exports[`human report snapshots > dts-sidecar 1`] = `
+"exit code 1
+
+Migration priority (2)
+
+  1. src/config.mjs  [ready, fixes mixed branch]
+  2. src/legacy.js  [ready, fixes mixed branch]
+
+Mixed branches: TypeScript importing JavaScript (1)
+
+  1. src/index.ts
+     imports src/legacy.js (line 1)
+     imports src/config.mjs (line 2)
+
+✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
+"
+`;
+
+exports[`human report snapshots > dynamic 1`] = `
+"exit code 0
+
+Migration priority (2)
+
+  1. src/literal-feature.js  [ready]
+  2. src/index.js
+
+Manual review (1)
+
+  1. src/index.js:3  non-literal dynamic import: import(\`./\${name}.js\`)
+
+✔ No mixed branches: no TypeScript file imports JavaScript.
+"
+`;
+
+exports[`human report snapshots > external-packages 1`] = `
+"exit code 0
+
+Migration priority (0)
+
+  Nothing to migrate: every reachable file is TypeScript.
+
+✔ No mixed branches: no TypeScript file imports JavaScript.
+"
+`;
+
+exports[`human report snapshots > jsconfig-paths 1`] = `
+"exit code 0
+
+Migration priority (2)
+
+  1. src/lib/math.js  [ready]
+  2. src/index.js
+
+✔ No mixed branches: no TypeScript file imports JavaScript.
+"
+`;
+
+exports[`human report snapshots > json-and-assets 1`] = `
+"exit code 0
+
+Migration priority (1)
+
+  1. src/index.js  [ready]
+
+Manual review (1)
+
+  1. src/index.js:4  unresolved import: ./missing.css
+
+✔ No mixed branches: no TypeScript file imports JavaScript.
+"
+`;
+
+exports[`human report snapshots > jsx-tsx 1`] = `
+"exit code 1
+
+Migration priority (3)
+
+  1. src/Logo.jsx  [ready, fixes mixed branch]
+  2. src/Footer.jsx  [ready]
+  3. src/App.jsx
+
+Mixed branches: TypeScript importing JavaScript (1)
+
+  1. src/Header.tsx
+     imports src/Logo.jsx (line 1)
+
+✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
+"
+`;
+
+exports[`human report snapshots > mixed-cycle 1`] = `
+"exit code 1
+
+Migration priority (2)
+
+  1. src/a.js  [cycle: migrate together, ready, fixes mixed branch]
+  2. src/index.js
+
+Circular dependencies (1)
+
+  1. src/a.js → src/b.ts → src/a.js
+
+Mixed branches: TypeScript importing JavaScript (1)
+
+  1. src/b.ts
+     imports src/a.js (line 1)
+
+✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
+"
+`;
+
+exports[`human report snapshots > mts-cts 1`] = `
+"exit code 1
+
+Migration priority (3)
+
+  1. src/leaf.cjs  [ready, fixes mixed branch]
+  2. src/leaf.mjs  [ready, fixes mixed branch]
+  3. src/index.mjs  [ready]
+
+Mixed branches: TypeScript importing JavaScript (2)
+
+  1. src/common.cts
+     imports src/leaf.cjs (line 1)
+  2. src/esm.mts
+     imports src/leaf.mjs (line 1)
+
+✖ 2 TypeScript files import JavaScript. Migrate the files marked "fixes mixed branch" first.
+"
+`;
+
+exports[`human report snapshots > multiple-entrypoints 1`] = `
+"exit code 0
+
+Migration priority (4)
+
+  1. src/components/Layout.js  [ready]
+  2. src/components/Button.js  [ready]
+  3. src/pages/about.js
+  4. src/pages/home.js
+
+✔ No mixed branches: no TypeScript file imports JavaScript.
+"
+`;
+
+exports[`human report snapshots > multiple-entrypoints-nested 1`] = `
+"exit code 0
+
+Migration priority (6)
+
+  1. src/components/Layout.js  [ready]
+  2. src/components/Button.js  [ready]
+  3. src/components/Card.js  [ready]
+  4. src/pages/admin/settings.js
+  5. src/pages/blog/post.js
+  6. src/pages/home.js
+
+✔ No mixed branches: no TypeScript file imports JavaScript.
+"
+`;
+
+exports[`human report snapshots > nodenext-extensionless 1`] = `
+"exit code 0
+
+Migration priority (2)
+
+  1. src/util.js  [ready]
+  2. src/index.js
+
+✔ No mixed branches: no TypeScript file imports JavaScript.
+"
+`;
+
+exports[`human report snapshots > package-imports 1`] = `
+"exit code 0
+
+Migration priority (2)
+
+  1. src/lib/math.js  [ready]
+  2. src/index.js
+
+✔ No mixed branches: no TypeScript file imports JavaScript.
+"
+`;
+
+exports[`human report snapshots > path-alias 1`] = `
+"exit code 0
+
+Migration priority (2)
+
+  1. src/utils/math.js  [ready]
+  2. src/index.js
+
+Manual review (1)
+
+  1. src/index.js:2  unresolved import: @utils/missing
+
+✔ No mixed branches: no TypeScript file imports JavaScript.
+"
+`;
+
+exports[`human report snapshots > re-exports 1`] = `
+"exit code 0
+
+Migration priority (5)
+
+  1. src/label.js  [ready]
+  2. src/number.js  [ready]
+  3. src/feature.js
+  4. src/barrel.js
+  5. src/index.js
+
+✔ No mixed branches: no TypeScript file imports JavaScript.
+"
+`;
+
+exports[`human report snapshots > report-showcase 1`] = `
+"exit code 1
+
+Migration priority (3)
+
+  1. src/legacy.js  [ready, fixes mixed branch]
+  2. src/a.js, src/b.js  [cycle: migrate together, ready]
+  3. src/index.js
+
+Circular dependencies (1)
+
+  1. src/a.js → src/b.js → src/a.js
+
+Mixed branches: TypeScript importing JavaScript (1)
+
+  1. src/feature.ts
+     imports src/legacy.js (line 1)
+
+Manual review (1)
+
+  1. src/index.js:5  non-literal dynamic import: import(name)
+
+✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
+"
+`;
+
+exports[`human report snapshots > solution-style 1`] = `
+"exit code 1
+
+Migration priority (1)
+
+  1. src/legacy.js  [ready, fixes mixed branch]
+
+Mixed branches: TypeScript importing JavaScript (1)
+
+  1. src/main.ts
+     imports src/legacy.js (line 1)
+
+✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
+"
+`;
+
+exports[`human report snapshots > transitive-mixed 1`] = `
+"exit code 1
+
+Migration priority (5)
+
+  1. src/legacy/conn.js  [ready, fixes mixed branch]
+  2. src/util.js  [ready, fixes mixed branch]
+  3. src/legacy/db.js  [fixes mixed branch]
+  4. src/helpers/format.js  [ready]
+  5. src/main.js
+
+Mixed branches: TypeScript importing JavaScript (2)
+
+  1. src/app.ts
+     imports src/util.js (line 2)
+  2. src/service.ts
+     imports src/legacy/db.js (line 1)
+
+✖ 2 TypeScript files import JavaScript. Migrate the files marked "fixes mixed branch" first.
+"
+`;
+
+exports[`human report snapshots > ts-extension-imports 1`] = `
+"exit code 1
+
+Migration priority (1)
+
+  1. src/legacy.js  [ready, fixes mixed branch]
+
+Mixed branches: TypeScript importing JavaScript (1)
+
+  1. src/util.ts
+     imports src/legacy.js (line 1)
+
+✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
+"
+`;
+
+exports[`human report snapshots > tsconfig-extends 1`] = `
+"exit code 1
+
+Migration priority (1)
+
+  1. src/legacy.js  [ready, fixes mixed branch]
+
+Mixed branches: TypeScript importing JavaScript (1)
+
+  1. src/index.ts
+     imports src/legacy.js (line 1)
+
+✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
+"
+`;
+
+exports[`human report snapshots > tsconfig-no-inputs 1`] = `
+"exit code 0
+
+Migration priority (2)
+
+  1. src/util.js  [ready]
+  2. src/index.js
+
+✔ No mixed branches: no TypeScript file imports JavaScript.
+"
+`;
+
+exports[`human report snapshots > typescript-cycle 1`] = `
+"exit code 0
+
+Migration priority (1)
+
+  1. src/index.js  [ready]
+
+Circular dependencies (1)
+
+  1. src/a.ts → src/b.ts → src/a.ts
+
+✔ No mixed branches: no TypeScript file imports JavaScript.
+"
+`;
+
+exports[`human report snapshots > typescript-leaves 1`] = `
+"exit code 0
+
+Migration priority (2)
+
+  1. src/summary.js  [ready]
+  2. src/index.js
+
+✔ No mixed branches: no TypeScript file imports JavaScript.
+"
+`;
+
+exports[`human report snapshots > typescript-middle-js-leaf 1`] = `
+"exit code 1
+
+Migration priority (2)
+
+  1. src/punctuation.js  [ready, fixes mixed branch]
+  2. src/index.js  [ready]
+
+Mixed branches: TypeScript importing JavaScript (1)
+
+  1. src/greeting.ts
+     imports src/punctuation.js (line 1)
+
+✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
+"
+`;
+
+exports[`human report snapshots > typescript-module-syntax 1`] = `
+"exit code 1
+
+Migration priority (4)
+
+  1. src/legacy-config.js  [ready, fixes mixed branch]
+  2. src/legacy-require.js  [ready, fixes mixed branch]
+  3. src/legacy-shapes.js  [ready, fixes mixed branch]
+  4. src/legacy-types.js  [ready, fixes mixed branch]
+
+Mixed branches: TypeScript importing JavaScript (1)
+
+  1. src/index.ts
+     imports src/legacy-require.js (line 1)
+     imports src/legacy-types.js (line 2)
+     imports src/legacy-shapes.js (line 3)
+     imports src/legacy-config.js (line 4)
+
+✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
+"
+`;
+
+exports[`human report snapshots > typescript-only 1`] = `
+"exit code 0
+
+Migration priority (0)
+
+  Nothing to migrate: every reachable file is TypeScript.
+
+✔ No mixed branches: no TypeScript file imports JavaScript.
+"
+`;
+
+exports[`human report snapshots > unresolved 1`] = `
+"exit code 0
+
+Migration priority (2)
+
+  1. src/existing.js  [ready]
+  2. src/index.js
+
+Manual review (1)
+
+  1. src/index.js:3  unresolved import: ./missing.js
+
+✔ No mixed branches: no TypeScript file imports JavaScript.
+"
+`;
