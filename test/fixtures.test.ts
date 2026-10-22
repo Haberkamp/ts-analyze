@@ -304,10 +304,13 @@ describe("circular dependencies", () => {
 });
 
 describe("TypeScript and JavaScript configuration", () => {
-  it("resolves tsconfig paths aliases with baseUrl", () => {
+  it("resolves tsconfig paths aliases with baseUrl and flags aliases that point nowhere", () => {
     const { report } = analyzeFixture("path-alias", ["src/index.js"]);
 
     expect(priorityFiles(report)).toEqual([["src/utils/math.js"], ["src/index.js"]]);
+    expect(report.manualReview).toEqual([
+      { file: "src/index.js", line: 2, reason: "unresolved import", detail: "@utils/missing" },
+    ]);
   });
 
   it("resolves bare imports through baseUrl", () => {
