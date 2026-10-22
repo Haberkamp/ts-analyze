@@ -1,0 +1,7 @@
+{
+  "name": "package-imports",
+  "type": "module",
+  "imports": {
+    "#lib/*": "./src/lib/*.js"
+  }
+}
