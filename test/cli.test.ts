@@ -22,16 +22,18 @@ describe("human report", () => {
         "",
         "Circular dependencies (1)",
         "",
-        "  1. src/a.js → src/b.js → src/a.js",
+        "  1. ┌─▶ src/a.js",
+        "     │   ↓",
+        "     └── src/b.js",
         "",
         "Mixed branches: TypeScript importing JavaScript (1)",
         "",
         "  1. src/feature.ts",
-        "     imports src/legacy.js (line 1)",
+        "       imports src/legacy.js  [line 1]",
         "",
         "Manual review (1)",
         "",
-        "  1. src/index.js:5  non-literal dynamic import: import(name)",
+        "  1. src/index.js:5  import(name)  [non-literal dynamic import]",
         "",
         '✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.',
         "",
@@ -83,15 +85,19 @@ describe("human report", () => {
     );
   });
 
-  it("lists the rest of a cycle group that is not on the shortest cycle", () => {
+  it("draws each cycle as a loop and counts group members off the shortest cycle", () => {
     const result = run(copyFixture("cycle-shapes"), ["src/index.js"]);
 
     expect(result.stdout).toContain(
       [
         "Circular dependencies (2)",
         "",
-        "  1. src/a.js → src/b.js → src/a.js (group also includes src/c.js)",
-        "  2. src/self.js → src/self.js",
+        "  1. ┌─▶ src/a.js",
+        "     │   ↓",
+        "     └── src/b.js",
+        "         [+1 more file in this cycle group]",
+        "",
+        "  2. src/self.js  [imports itself]",
       ].join("\n"),
     );
   });
@@ -115,7 +121,7 @@ describe("exit status", () => {
     const result = run(copyFixture("typescript-middle-js-leaf"), ["--dry-run", "src/index.js"]);
 
     expect(result.exitCode).toBe(0);
-    expect(result.stdout).toContain("  1. src/greeting.ts\n     imports src/punctuation.js (line 1)");
+    expect(result.stdout).toContain("  1. src/greeting.ts\n       imports src/punctuation.js  [line 1]");
     expect(result.stdout).toContain(
       '✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first. (dry run: not failing)',
     );

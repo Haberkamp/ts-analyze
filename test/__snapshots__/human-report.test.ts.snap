@@ -10,7 +10,7 @@ Migration priority (1)
 Mixed branches: TypeScript importing JavaScript (1)
 
   1. src/index.ts
-     imports src/legacy.js (line 1)
+       imports src/legacy.js  [line 1]
 
 ✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
 "
@@ -54,8 +54,8 @@ Migration priority (2)
 Mixed branches: TypeScript importing JavaScript (1)
 
   1. src/index.ts
-     imports src/utils/index.js (line 1)
-     imports src/format.js (line 2)
+       imports src/utils/index.js  [line 1]
+       imports src/format.js  [line 2]
 
 ✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
 "
@@ -104,7 +104,7 @@ Migration priority (6)
 
 Manual review (1)
 
-  1. src/index.js:5  non-literal require: require(name)
+  1. src/index.js:5  require(name)  [non-literal require]
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
 "
@@ -134,7 +134,9 @@ Migration priority (2)
 
 Circular dependencies (1)
 
-  1. src/a.js → src/b.js → src/a.js
+  1. ┌─▶ src/a.js
+     │   ↓
+     └── src/b.js
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
 "
@@ -151,8 +153,12 @@ Migration priority (3)
 
 Circular dependencies (2)
 
-  1. src/a.js → src/b.js → src/a.js (group also includes src/c.js)
-  2. src/self.js → src/self.js
+  1. ┌─▶ src/a.js
+     │   ↓
+     └── src/b.js
+         [+1 more file in this cycle group]
+
+  2. src/self.js  [imports itself]
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
 "
@@ -193,8 +199,8 @@ Migration priority (2)
 Mixed branches: TypeScript importing JavaScript (1)
 
   1. src/index.ts
-     imports src/legacy.js (line 1)
-     imports src/config.mjs (line 2)
+       imports src/legacy.js  [line 1]
+       imports src/config.mjs  [line 2]
 
 ✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
 "
@@ -210,7 +216,7 @@ Migration priority (2)
 
 Manual review (1)
 
-  1. src/index.js:3  non-literal dynamic import: import(\`./\${name}.js\`)
+  1. src/index.js:3  import(\`./\${name}.js\`)  [non-literal dynamic import]
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
 "
@@ -248,7 +254,7 @@ Migration priority (1)
 
 Manual review (1)
 
-  1. src/index.js:4  unresolved import: ./missing.css
+  1. src/index.js:4  ./missing.css  [unresolved import]
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
 "
@@ -266,7 +272,7 @@ Migration priority (3)
 Mixed branches: TypeScript importing JavaScript (1)
 
   1. src/Header.tsx
-     imports src/Logo.jsx (line 1)
+       imports src/Logo.jsx  [line 1]
 
 ✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
 "
@@ -282,12 +288,14 @@ Migration priority (2)
 
 Circular dependencies (1)
 
-  1. src/a.js → src/b.ts → src/a.js
+  1. ┌─▶ src/a.js
+     │   ↓
+     └── src/b.ts
 
 Mixed branches: TypeScript importing JavaScript (1)
 
   1. src/b.ts
-     imports src/a.js (line 1)
+       imports src/a.js  [line 1]
 
 ✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
 "
@@ -305,9 +313,9 @@ Migration priority (3)
 Mixed branches: TypeScript importing JavaScript (2)
 
   1. src/common.cts
-     imports src/leaf.cjs (line 1)
+       imports src/leaf.cjs  [line 1]
   2. src/esm.mts
-     imports src/leaf.mjs (line 1)
+       imports src/leaf.mjs  [line 1]
 
 ✖ 2 TypeScript files import JavaScript. Migrate the files marked "fixes mixed branch" first.
 "
@@ -377,7 +385,7 @@ Migration priority (2)
 
 Manual review (1)
 
-  1. src/index.js:2  unresolved import: @utils/missing
+  1. src/index.js:2  @utils/missing  [unresolved import]
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
 "
@@ -409,16 +417,18 @@ Migration priority (3)
 
 Circular dependencies (1)
 
-  1. src/a.js → src/b.js → src/a.js
+  1. ┌─▶ src/a.js
+     │   ↓
+     └── src/b.js
 
 Mixed branches: TypeScript importing JavaScript (1)
 
   1. src/feature.ts
-     imports src/legacy.js (line 1)
+       imports src/legacy.js  [line 1]
 
 Manual review (1)
 
-  1. src/index.js:5  non-literal dynamic import: import(name)
+  1. src/index.js:5  import(name)  [non-literal dynamic import]
 
 ✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
 "
@@ -434,7 +444,7 @@ Migration priority (1)
 Mixed branches: TypeScript importing JavaScript (1)
 
   1. src/main.ts
-     imports src/legacy.js (line 1)
+       imports src/legacy.js  [line 1]
 
 ✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
 "
@@ -454,9 +464,9 @@ Migration priority (5)
 Mixed branches: TypeScript importing JavaScript (2)
 
   1. src/app.ts
-     imports src/util.js (line 2)
+       imports src/util.js  [line 2]
   2. src/service.ts
-     imports src/legacy/db.js (line 1)
+       imports src/legacy/db.js  [line 1]
 
 ✖ 2 TypeScript files import JavaScript. Migrate the files marked "fixes mixed branch" first.
 "
@@ -472,7 +482,7 @@ Migration priority (1)
 Mixed branches: TypeScript importing JavaScript (1)
 
   1. src/util.ts
-     imports src/legacy.js (line 1)
+       imports src/legacy.js  [line 1]
 
 ✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
 "
@@ -488,7 +498,7 @@ Migration priority (1)
 Mixed branches: TypeScript importing JavaScript (1)
 
   1. src/index.ts
-     imports src/legacy.js (line 1)
+       imports src/legacy.js  [line 1]
 
 ✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
 "
@@ -515,7 +525,9 @@ Migration priority (1)
 
 Circular dependencies (1)
 
-  1. src/a.ts → src/b.ts → src/a.ts
+  1. ┌─▶ src/a.ts
+     │   ↓
+     └── src/b.ts
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
 "
@@ -544,7 +556,7 @@ Migration priority (2)
 Mixed branches: TypeScript importing JavaScript (1)
 
   1. src/greeting.ts
-     imports src/punctuation.js (line 1)
+       imports src/punctuation.js  [line 1]
 
 ✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
 "
@@ -563,10 +575,10 @@ Migration priority (4)
 Mixed branches: TypeScript importing JavaScript (1)
 
   1. src/index.ts
-     imports src/legacy-require.js (line 1)
-     imports src/legacy-types.js (line 2)
-     imports src/legacy-shapes.js (line 3)
-     imports src/legacy-config.js (line 4)
+       imports src/legacy-require.js  [line 1]
+       imports src/legacy-types.js  [line 2]
+       imports src/legacy-shapes.js  [line 3]
+       imports src/legacy-config.js  [line 4]
 
 ✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
 "
@@ -593,7 +605,7 @@ Migration priority (2)
 
 Manual review (1)
 
-  1. src/index.js:3  unresolved import: ./missing.js
+  1. src/index.js:3  ./missing.js  [unresolved import]
 
 ✔ No mixed branches: no TypeScript file imports JavaScript.
 "

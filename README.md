@@ -25,16 +25,18 @@ Migration priority (3)
 
 Circular dependencies (1)
 
-  1. src/a.js → src/b.js → src/a.js
+  1. ┌─▶ src/a.js
+     │   ↓
+     └── src/b.js
 
 Mixed branches: TypeScript importing JavaScript (1)
 
   1. src/feature.ts
-     imports src/legacy.js (line 1)
+       imports src/legacy.js  [line 1]
 
 Manual review (1)
 
-  1. src/index.js:5  non-literal dynamic import: import(name)
+  1. src/index.js:5  import(name)  [non-literal dynamic import]
 
 ✖ 1 TypeScript file imports JavaScript. Migrate the files marked "fixes mixed branch" first.
 ```
